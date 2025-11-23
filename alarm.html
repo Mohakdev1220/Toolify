@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Persistent Web Alarm Clock</title>
+<style>
+body {
+    margin:0;
+    font-family: Arial, sans-serif;
+    background: url('https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+    background-size: cover;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding-top:30px;
+    min-height:100vh;
+}
+.container {
+    width:90%;
+    max-width:500px;
+    background: rgba(255,255,255,0.9);
+    border-radius:15px;
+    padding:20px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.15);
+}
+h1 { text-align:center; color:#1976d2; margin-bottom:20px; }
+input, select, button {
+    width:100%;
+    padding:10px;
+    margin:6px 0;
+    border-radius:8px;
+    border:1px solid #ccc;
+    font-size:16px;
+}
+button {
+    background:#1976d2;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.2s;
+}
+button:hover { background:#0d47a1; }
+.alarm-list { margin-top:20px; }
+.alarm-item {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px;
+    border-radius:10px;
+    border-left:5px solid #1976d2;
+    margin-bottom:10px;
+    background:#f9f9f9;
+}
+.action-btn { margin-left:5px; padding:5px 10px; border:none; border-radius:6px; cursor:pointer; font-size:0.85rem;}
+.delete-btn { background:#b00020; color:white; }
+.test-btn { background:#03dac6; color:white; }
+.edit-btn { background:#ffa000; color:white; }
+/* New Style for Navigation */
+.back-btn {
+    background: #6c757d;
+    margin-top: 15px;
+}
+.back-btn:hover {
+    background: #5a6268;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Persistent Alarm Clock</h1>
+    <label>Alarm Time:</label>
+    <input type="time" id="alarmTime">
+    
+    <label>Sound:</label>
+    <select id="alarmSound">
+        <option value="bells.mp3">Bells</option>
+        <option value="beep.mp3">Beep</option>
+        <option value="ring.mp3">Ring</option>
+    </select>
+
+    <label>
+        <input type="checkbox" id="loopAlarm"> Loop Alarm
+    </label>
+
+    <button id="addAlarmBtn">Add / Update Alarm</button>
+    <button id="testAlarmBtn">Test Alarm</button>
+
+    <div class="alarm-list" id="alarmList"></div>
+    <a href="index.html"><button class="back-btn">← Back to Tools Hub</button></a>
+</div>
+
+<audio id="alarmAudio"></audio>
+
+<script>
+// ===== Elements =====
+const alarmTimeInput = document.getElementById('alarmTime');
+const alarmSoundSelect = document.getElementById('alarmSound');
+const loopCheckbox = document.getElementById('loopAlarm');
+const addBtn = document.getElementById('addAlarmBtn');
+const testBtn = document.getElementById('testAlarmBtn');
+const alarmList = document.getElementById('alarmList');
+const audio = document.getElementById('alarmAudio');
+
+let alarms = JSON.parse(localStorage.getItem('alarms') || '[]');
+let editingIndex = null;
+
+// ===== Notification Permission =====
+if (Notification.permission !== "granted") {
+    Notification.requestPermission();
+}
+
+// ===== Service Worker Registration =====
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').then(reg=>console.log('Service Worker Registered'));
+}
+
+// ===== Functions =====
+function renderAlarms(){
+    alarmList.innerHTML = '';
+    alarms.forEach((alarm, idx)=>{
+        const div = document.createElement('div');
+        div.className = 'alarm-item';
+        div.innerHTML = `<span>${alarm.time} (${alarm.sound})</span>
+        <div>
+            <button class="action-btn test-btn" data-idx="${idx}">Test</button>
+            <button class="action-btn edit-btn" data-idx="${idx}">Edit</button>
+            <button class="action-btn delete-btn" data-idx="${idx}">Delete</button>
+        </div>`;
+        alarmList.appendChild(div);
+    });
+    localStorage.setItem('alarms', JSON.stringify(alarms));
+
+    document.querySelectorAll('.delete-btn').forEach(btn=>{
+        btn.onclick = e=>{
+            const idx = Number(e.target.dataset.idx);
+            alarms.splice(idx,1);
+            renderAlarms();
+        }
+    });
+    document.querySelectorAll('.test-btn').forEach(btn=>{
+        btn.onclick = e=>{
+            const idx = Number(e.target.dataset.idx);
+            playAlarm(alarms[idx].sound, alarms[idx].loop);
+        }
+    });
+    document.querySelectorAll('.edit-btn').forEach(btn=>{
+        btn.onclick = e=>{
+            const idx = Number(e.target.dataset.idx);
+            const alarm = alarms[idx];
+            alarmTimeInput.value = alarm.time;
+            alarmSoundSelect.value = alarm.sound;
+            loopCheckbox.checked = alarm.loop;
+            editingIndex = idx;
+        }
+    });
+}
+
+function playAlarm(sound, loop){
+    audio.src = sound;
+    audio.loop = loop;
+    audio.play();
+}
+
+// Add / update alarm
+addBtn.onclick = ()=>{
+    const time = alarmTimeInput.value;
+    const sound = alarmSoundSelect.value;
+    const loop = loopCheckbox.checked;
+    if(!time){ alert("Select a time!"); return; }
+
+    if(editingIndex !== null){
+        alarms[editingIndex] = {time, sound, loop};
+        editingIndex = null;
+    } else {
+        alarms.push({time, sound, loop});
+    }
+    renderAlarms();
+    alarmTimeInput.value = '';
+}
+
+// Test Alarm
+testBtn.onclick = ()=>{
+    playAlarm(alarmSoundSelect.value, loopCheckbox.checked);
+}
+
+// ===== Alarm Checker =====
+setInterval(()=>{
+    const now = new Date();
+    const hhmm = now.toTimeString().slice(0,5);
+    alarms.forEach((alarm, idx)=>{
+        const parts = alarm.time.split(':');
+        const alarmDate = new Date();
+        alarmDate.setHours(Number(parts[0]), Number(parts[1]),0,0);
+
+        // 30 sec before
+        if(alarmDate - now <= 30000 && alarmDate - now > 29000){
+            if(Notification.permission==="granted"){
+                navigator.serviceWorker.ready.then(reg=>{
+                    reg.showNotification('Upcoming Alarm', {
+                        body: `Alarm will ring at ${alarm.time}`,
+                        tag: `alarm-${idx}`,
+                        renotify: true
+                    });
+                });
+            }
+        }
+
+        // On time
+        if(alarm.time === hhmm && !alarm.rung){
+            playAlarm(alarm.sound, alarm.loop);
+            alarm.rung = true;
+        }
+    });
+},1000);
+
+renderAlarms();
+</script>
+</body>
+</html>

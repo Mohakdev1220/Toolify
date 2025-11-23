@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Responsive Timer with Music Selector</title>
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    background: #f0f0f0;
+    color: #000;
+}
+
+h1 {
+    font-size: 60px;
+    margin-bottom: 20px;
+    word-break: break-word;
+}
+
+.timer-container {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+input, select, button {
+    font-size: 18px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+button {
+    background: linear-gradient(45deg,#1d4ed8,#3b82f6);
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: linear-gradient(45deg,#3b82f6,#60a5fa);
+}
+
+.music-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.music-container button, .music-container select {
+    padding: 5px 12px;
+    font-size: 14px;
+}
+
+.music-name {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* New Style for Navigation */
+.back-btn {
+    background: #6c757d;
+    margin-top: 15px;
+}
+.back-btn:hover {
+    background: #5a6268;
+}
+.back-btn-container {
+    margin-top: 20px;
+}
+
+
+/* Tablet */
+@media (max-width: 1024px) {
+    h1 { font-size: 50px; }
+    input, select, button { font-size: 16px; padding: 8px; }
+    .music-name { font-size: 14px; }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    h1 { font-size: 36px; }
+    .timer-container { flex-direction: column; gap: 10px; }
+    input, select, button { font-size: 14px; padding: 6px; width: 80%; max-width: 200px; }
+    .music-container { flex-direction: column; gap: 8px; }
+    .music-name { font-size: 14px; }
+    button { width: 120px; }
+    .back-btn { width: 80%; max-width: 200px; }
+}
+</style>
+</head>
+<body>
+
+<h1 id="display">00:00:00</h1>
+
+<div class="timer-container">
+    <input type="number" id="timeInput" min="0" placeholder="0">
+    <select id="timeUnit">
+        <option value="seconds">Seconds</option>
+        <option value="minutes">Minutes</option>
+        <option value="hours">Hours</option>
+    </select>
+    <button id="startStopBtn">Start</button>
+    <button onclick="resetTimer()">Reset</button>
+</div>
+
+<div class="music-container">
+    <span class="music-name">Select Song:</span>
+    <select id="songSelect">
+        <option value="">-- Choose a Song --</option>
+        <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">Lo-Fi Study Beats</option>
+        <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3">Soft Piano Loop</option>
+        <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3">Ambient Chill</option>
+        <option value="upload">Upload Your Own</option>
+    </select>
+    <input type="file" id="uploadSong" accept="audio/*" style="display:none;">
+    <button id="musicToggle">Play/Pause Music</button>
+</div>
+
+<div class="back-btn-container">
+    <a href="index.html"><button class="back-btn">← Back to Tools Hub</button></a>
+</div>
+
+<audio id="timerAudio"></audio>
+
+<audio id="beepAudio" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
+<script>
+let time = 0;
+let interval = null;
+let isRunning = false;
+
+const display = document.getElementById("display");
+const input = document.getElementById("timeInput");
+const unit = document.getElementById("timeUnit");
+const startStopBtn = document.getElementById("startStopBtn");
+const audio = document.getElementById("timerAudio");
+const musicToggle = document.getElementById("musicToggle");
+const songSelect = document.getElementById("songSelect");
+const uploadInput = document.getElementById("uploadSong");
+const beepAudio = document.getElementById("beepAudio");
+
+function updateDisplay() {
+    let h = Math.floor(time / 3600);
+    let m = Math.floor((time % 3600) / 60);
+    let s = time % 60;
+    display.innerText = 
+        String(h).padStart(2,'0') + ':' +
+        String(m).padStart(2,'0') + ':' +
+        String(s).padStart(2,'0');
+}
+
+function startStopTimer() {
+    if(!isRunning){
+        let val = parseInt(input.value);
+        if(isNaN(val) || val <=0) return;
+
+        if(unit.value === 'minutes') val *= 60;
+        else if(unit.value === 'hours') val *= 3600;
+
+        if(time===0) time = val;
+
+        interval = setInterval(()=>{
+            if(time <=0){
+                clearInterval(interval);
+                interval = null;
+                isRunning=false;
+                startStopBtn.innerText='Start';
+                updateDisplay();
+                playBeep3Sec();
+            } else {
+                time--;
+                updateDisplay();
+            }
+        },1000);
+
+        isRunning = true;
+        startStopBtn.innerText = 'Stop';
+    } else {
+        clearInterval(interval);
+        interval = null;
+        isRunning=false;
+        startStopBtn.innerText='Start';
+    }
+}
+
+function resetTimer(){
+    clearInterval(interval);
+    time = 0;
+    interval = null;
+    isRunning=false;
+    startStopBtn.innerText='Start';
+    input.value='';
+    updateDisplay();
+}
+
+// Music control button
+musicToggle.addEventListener('click', ()=>{
+    if(audio.src === "") return; // no song selected
+    if(audio.paused){
+        audio.play();
+    } else {
+        audio.pause();
+    }
+});
+
+// Song selection dropdown
+songSelect.addEventListener('change', ()=>{
+    if(audio) audio.pause();
+    if(songSelect.value === "upload"){
+        uploadInput.click();
+    } else if(songSelect.value !== ""){
+        audio.src = songSelect.value;
+        audio.pause();
+        audio.currentTime=0;
+    }
+});
+
+// Upload song
+uploadInput.addEventListener('change', function(){
+    const file = this.files[0];
+    if(file){
+        const url = URL.createObjectURL(file);
+        audio.src = url;
+        audio.pause();
+        audio.currentTime = 0;
+        const newOption = document.createElement("option");
+        newOption.value = url;
+        newOption.text = file.name;
+        newOption.selected = true;
+        songSelect.appendChild(newOption);
+    }
+});
+
+// Play beep 3 seconds when timer ends
+function playBeep3Sec(){
+    let count = 0;
+    beepAudio.play();
+    const beepInterval = setInterval(()=>{
+        beepAudio.currentTime = 0;
+        beepAudio.play();
+        count++;
+        if(count>=3){
+            clearInterval(beepInterval);
+            beepAudio.pause();
+            beepAudio.currentTime = 0;
+        }
+    }, 1000);
+}
+
+startStopBtn.addEventListener('click', startStopTimer);
+updateDisplay();
+</script>
+
+</body>
+</html>
