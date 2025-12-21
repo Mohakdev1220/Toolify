@@ -1,109 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Toolbox Hub</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toolbox Hub</title>
 
-<style>
-/* ===== Body & Background ===== */
-body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background: linear-gradient(135deg, #e0f7fa, #f4f7f6);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-}
+    <style>
+        * { box-sizing: border-box; }
 
-/* ===== Main Container ===== */
-.container {
-    width: 95%;
-    max-width: 650px;
-    margin: 50px auto 20px;
-    padding: 40px 30px;
-    border-radius: 20px;
-    background-color: #ffffffcc;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    text-align: center;
-    backdrop-filter: blur(5px);
-}
+        :root {
+            --bg1: #2196f3;
+            --bg2: #00bcd4;
+            --card: rgba(255, 255, 255, 0.85);
+            --text: #111;
+            --btn1: #1976d2;
+            --btn2: #00acc1;
+            --loader-bg: #111;
+        }
 
-/* ===== Header ===== */
-h1 {
-    color: #1976d2;
-    font-size: 2.5rem;
-    margin-bottom: 35px;
-    font-weight: 700;
-}
+        body.dark {
+            --bg1: #0f2027;
+            --bg2: #203a43;
+            --card: rgba(30, 30, 30, 0.9);
+            --text: #fff;
+            --btn1: #37474f;
+            --btn2: #263238;
+            --loader-bg: #000;
+        }
 
-/* ===== Link List ===== */
-.link-list {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
+        /* ===== Loader ===== */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: var(--loader-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            transition: opacity 0.5s ease;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #444;
+            border-top: 5px solid #00e5ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-.link-list a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 18px 10px;
-    background-color: #1976d2;
-    color: white;
-    text-decoration: none;
-    border-radius: 12px;
-    font-size: 18px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
+        /* ===== Background ===== */
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(120deg, var(--bg1), var(--bg2));
+            background-size: 300% 300%;
+            animation: bgMove 12s ease infinite;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text);
+            transition: background 0.5s ease, color 0.3s ease;
+        }
+        @keyframes bgMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
 
-.link-list a:hover {
-    background-color: #0d47a1;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-}
+        /* ===== Dark Mode Button ===== */
+        .toggle {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            font-size: 20px;
+            padding: 10px 14px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            background: var(--card);
+            color: var(--text);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
 
-/* ===== Footer ===== */
-footer {
-    margin-top: auto;
-    padding: 15px 0 25px;
-    font-size: 14px;
-    color: #555;
-    text-align: center;
-}
+        /* ===== Container ===== */
+        .container {
+            width: 95%;
+            max-width: 700px;
+            margin-top: 80px;
+            padding: 40px 30px;
+            border-radius: 22px;
+            background: var(--card);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            text-align: center;
+            animation: pop 0.8s ease forwards;
+        }
+        @keyframes pop {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-/* ===== Responsive ===== */
-@media (max-width: 500px) {
-    .link-list {
-        grid-template-columns: 1fr;
-    }
-    h1 { font-size: 2rem; }
-}
-</style>
+        h1 {
+            margin-bottom: 35px;
+            font-size: 2.6rem;
+            font-weight: 800;
+        }
+
+        /* ===== Tools ===== */
+        .link-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 22px;
+        }
+        .link-list a {
+            padding: 22px;
+            border-radius: 16px;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, var(--btn1), var(--btn2));
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .link-list a span {
+            display: inline-block;
+            margin-right: 8px;
+            transition: transform 0.3s;
+        }
+        .link-list a:hover {
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+        .link-list a:hover span {
+            transform: rotate(-10deg) scale(1.2);
+        }
+
+        /* ===== Footer ===== */
+        footer {
+            margin-top: auto;
+            padding: 20px;
+            color: var(--text);
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
+        /* ===== Mobile ===== */
+        @media (max-width: 500px) {
+            .link-list { grid-template-columns: 1fr; }
+            h1 { font-size: 2.1rem; }
+        }
+    </style>
 </head>
 
 <body>
 
+<div id="loader"><div class="spinner"></div></div>
+
+<button class="toggle" onclick="toggleMode()" id="themeBtn">🌙</button>
+
+<audio id="clickSound" preload="auto">
+    <source src="https://assets.mixkit.co/sfx/preview/mixkit-click-error-1110.mp3" type="audio/mpeg">
+</audio>
+
 <div class="container">
     <h1>🛠️ Toolbox Hub</h1>
+
     <div class="link-list">
-        <a href="alarm.html">⏰ Alarm Clock</a>
-        <a href="timer.html">⏱️ Timer</a>
-        <a href="weather.html">☀️ Weather</a>
-        <a href="calculator.html">🧮 Calculator</a>
-        <a href="calendar.html">🗓️ Calendar</a>
-        <a href="clock.html">⌚ Digital Clock</a>
+        <a href="alarm.html" onclick="handleNav(event, 'alarm.html')"><span>⏰</span>Alarm Clock</a>
+        <a href="timer.html" onclick="handleNav(event, 'timer.html')"><span>⏱️</span>Timer</a>
+        <a href="weather.html" onclick="handleNav(event, 'weather.html')"><span>☀️</span>Weather</a>
+        <a href="calculator.html" onclick="handleNav(event, 'calculator.html')"><span>🧮</span>Calculator</a>
+        <a href="calendar.html" onclick="handleNav(event, 'calendar.html')"><span>🗓️</span>Calendar</a>
+        <a href="clock.html" onclick="handleNav(event, 'clock.html')"><span>⌚</span>Digital Clock</a>
     </div>
 </div>
 
 <footer>
     Developed by <strong>Mohak Choubey</strong>
 </footer>
+
+<script>
+    /* Loader cleanup */
+    window.addEventListener('load', () => {
+        const loader = document.getElementById("loader");
+        loader.style.opacity = "0";
+        setTimeout(() => loader.style.display = "none", 500);
+    });
+
+    /* Dark mode logic */
+    const themeBtn = document.getElementById("themeBtn");
+    
+    function toggleMode() {
+        document.body.classList.toggle("dark");
+        const isDark = document.body.classList.contains("dark");
+        localStorage.setItem("mode", isDark);
+        themeBtn.innerText = isDark ? "☀️" : "🌙";
+    }
+
+    // Apply saved theme on load
+    if (localStorage.getItem("mode") === "true") {
+        document.body.classList.add("dark");
+        themeBtn.innerText = "☀️";
+    }
+
+    /* Sound and Navigation logic */
+    function handleNav(event, url) {
+        event.preventDefault(); // Stop immediate navigation
+        const sound = document.getElementById("clickSound");
+        
+        sound.play();
+        
+        // Navigate after a short delay so the user hears the click
+        setTimeout(() => {
+            window.location.href = url;
+        }, 150); 
+    }
+</script>
 
 </body>
 </html>
