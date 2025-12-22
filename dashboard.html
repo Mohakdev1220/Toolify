@@ -90,16 +90,23 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// 1. Apni Firebase Config yahaan bhi wahi rakhein jo Login page par hai
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSy...", 
-    authDomain: "your-project-id.firebaseapp.com",
-    projectId: "your-project-id",
-    appId: "1:xxx:web:xxx"
+  apiKey: "AIzaSyAeHDhdiTRwftUGYgrb1m19v7hm2R5rb-Y",
+  authDomain: "toolbox-hub-98c03.firebaseapp.com",
+  projectId: "toolbox-hub-98c03",
+  storageBucket: "toolbox-hub-98c03.firebasestorage.app",
+  messagingSenderId: "321020105472",
+  appId: "1:321020105472:web:356e7c2903def7b9d859e5"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 
 // Check if user is logged in
 onAuthStateChanged(auth, user => {
