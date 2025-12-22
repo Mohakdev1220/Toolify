@@ -3,237 +3,199 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toolbox Hub | Ultra Edition</title>
+    <title>Toolify | Your All-in-One Productivity Hub</title>
     <style>
         :root {
             --primary: #00d2ff;
             --secondary: #3a7bd5;
-            --glass: rgba(255, 255, 255, 0.07);
+            --glass: rgba(255, 255, 255, 0.08);
             --border: rgba(255, 255, 255, 0.15);
             --text: #ffffff;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
 
         body {
             min-height: 100vh;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
             color: var(--text);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: #0b1315;
             overflow-x: hidden;
-            /* ANIMATED MESH BACKGROUND */
-            background: linear-gradient(45deg, #0f2027, #203a43, #2c5364);
-            background-attachment: fixed;
         }
 
-        /* Ambient Background blobs */
-        .bg-blob {
+        /* DYNAMIC MESH BACKGROUND */
+        .bg-wrapper {
             position: fixed;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(0, 210, 255, 0.15) 0%, transparent 70%);
+            top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1;
-            filter: blur(50px);
-            animation: move 25s infinite alternate;
+            background: radial-gradient(circle at 20% 30%, #1e3c72 0%, transparent 40%),
+                        radial-gradient(circle at 80% 70%, #2a5298 0%, transparent 40%),
+                        #0f2027;
+            background-size: 200% 200%;
+            animation: meshMove 15s ease infinite alternate;
         }
 
-        @keyframes move {
-            from { transform: translate(-20%, -20%); }
-            to { transform: translate(50%, 40%); }
+        @keyframes meshMove {
+            from { background-position: 0% 0%; }
+            to { background-position: 100% 100%; }
         }
 
         /* NAVBAR */
         header {
             position: fixed;
-            top: 0;
-            width: 100%;
-            padding: 20px 50px;
+            top: 0; width: 100%;
+            padding: 15px 10%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
+            z-index: 1000;
             border-bottom: 1px solid var(--border);
-            z-index: 100;
         }
 
-        .logo { font-weight: 800; font-size: 1.5rem; letter-spacing: -1px; }
+        .logo-nav {
+            height: 45px; /* Adjust based on your image ratio */
+            transition: transform 0.3s ease;
+        }
 
-        .nav-btns .signup {
-            background: var(--text);
-            color: #000;
-            padding: 10px 24px;
-            border-radius: 50px;
+        .logo-nav:hover { transform: scale(1.05); }
+
+        .nav-links a {
             text-decoration: none;
+            color: white;
+            margin-left: 20px;
             font-weight: 600;
-            transition: 0.3s;
+            font-size: 0.95rem;
         }
 
-        .nav-btns .signup:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(255,255,255,0.4);
+        .login-btn { opacity: 0.8; transition: 0.3s; }
+        .login-btn:hover { opacity: 1; }
+
+        .get-started-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 10px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
         }
 
-        /* CONTAINER */
-        .container {
-            width: 90%;
-            max-width: 1000px;
-            background: var(--glass);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid var(--border);
-            border-radius: 40px;
-            padding: 60px 40px;
-            margin-top: 100px;
-            box-shadow: 0 50px 100px rgba(0,0,0,0.5);
+        /* HERO SECTION */
+        .hero {
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             text-align: center;
-            animation: slideUp 1s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(50px); }
-            to { opacity: 1; transform: translateY(0); }
+        .main-logo {
+            width: 180px;
+            margin-bottom: 30px;
+            filter: drop-shadow(0 0 20px rgba(255,255,255,0.2));
+            animation: logoPop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        h1 {
-            font-size: 3.5rem;
-            margin-bottom: 10px;
-            background: linear-gradient(to bottom, #fff 40%, #888);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        @keyframes logoPop {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
-        .subtitle {
-            font-size: 1.1rem;
-            opacity: 0.6;
-            margin-bottom: 50px;
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            line-height: 1.1;
+            margin-bottom: 20px;
+            font-weight: 800;
         }
 
-        /* TOOLS GRID */
-        .tools {
+        /* TOOLS SECTION */
+        .tools-container {
+            padding: 50px 10% 100px;
+        }
+
+        .tools-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 25px;
         }
 
-        .tool {
-            position: relative;
-            padding: 40px 20px;
-            background: rgba(255, 255, 255, 0.03);
+        .tool-card {
+            background: var(--glass);
             border: 1px solid var(--border);
-            border-radius: 24px;
+            padding: 40px;
+            border-radius: 30px;
             text-decoration: none;
-            color: #fff;
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            color: white;
+            transition: all 0.4s ease;
+            text-align: center;
+            position: relative;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            /* Fade in animation */
-            opacity: 0;
-            animation: fadeIn 0.5s forwards;
         }
 
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
-
-        /* Tool hover effects */
-        .tool:hover {
-            background: rgba(255, 255, 255, 0.1);
+        .tool-card:hover {
             transform: translateY(-10px);
+            background: rgba(255,255,255,0.12);
             border-color: var(--primary);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         }
 
-        .tool span { font-size: 2.5rem; }
-
-        /* Shine sweep effect */
-        .tool::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -150%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            transition: 0.6s;
+        .tool-card i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
         }
 
-        .tool:hover::before { left: 150%; }
+        .tool-card h3 { font-size: 1.4rem; }
 
-        /* Staggered Delay for tools */
-        .tool:nth-child(1) { animation-delay: 0.1s; }
-        .tool:nth-child(2) { animation-delay: 0.2s; }
-        .tool:nth-child(3) { animation-delay: 0.3s; }
-        .tool:nth-child(4) { animation-delay: 0.4s; }
-        .tool:nth-child(5) { animation-delay: 0.5s; }
-        .tool:nth-child(6) { animation-delay: 0.6s; }
-
+        /* Footer */
         footer {
-            margin-top: 50px;
-            opacity: 0.4;
-            font-weight: 300;
-            letter-spacing: 1px;
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid var(--border);
+            font-size: 0.9rem;
+            opacity: 0.5;
         }
 
-        /* RESPONSIVE */
-        @media (max-width: 900px) { .tools { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 600px) {
-            .tools { grid-template-columns: 1fr; }
-            h1 { font-size: 2.5rem; }
-            header { padding: 15px 20px; }
+            .hero h1 { font-size: 2.2rem; }
+            .nav-links .login-btn { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <div class="bg-blob"></div>
+    <div class="bg-wrapper"></div>
 
     <header>
-        <div class="logo">TOOLBOX.</div>
-        <div class="nav-btns">
-            <a href="#" class="signup">Get Started</a>
-        </div>
+        <img src="Untitled design (3).jpg" alt="Toolify Logo" class="logo-nav">
+        <nav class="nav-links">
+            <a href="login.html" class="login-btn">Login</a>
+            <a href="dashboard.html" class="get-started-btn">Get Started</a>
+        </nav>
     </header>
 
-    <main class="container">
-        <h1>Simplify Everything.</h1>
-        <p class="subtitle">Access your digital essentials in one beautiful dashboard.</p>
+    <main>
+        <section class="hero">
+            <img src="Untitled design (3).jpg" alt="Toolify" class="main-logo">
+            <h1>All Your Tools.<br><span style="color: var(--primary);">One Smart Hub.</span></h1>
+            <p style="opacity: 0.7; margin-top: 15px;">Experience the new standard of productivity with Toolify.</p>
+        </section>
 
-        <div class="tools">
-            <a href="#" class="tool"><span>⏰</span> Alarm</a>
-            <a href="#" class="tool"><span>⏱️</span> Timer</a>
-            <a href="#" class="tool"><span>🧮</span> Calculator</a>
-            <a href="#" class="tool"><span>☀️</span> Weather</a>
-            <a href="#" class="tool"><span>🗓️</span> Calendar</a>
-            <a href="#" class="tool"><span>🎙️</span> Text-to-Speech</a>
-        </div>
-
-        <footer>Designed by <b>Mohak Choubey</b></footer>
+        <section class="tools-container" id="explore">
+            <div class="tools-grid">
+                <a href="dashboard.html" class="tool-card"><i>⏰</i><h3>Alarm</h3></a>
+                <a href="dashboard.html" class="tool-card"><i>⏱️</i><h3>Timer</h3></a>
+                <a href="dashboard.html" class="tool-card"><i>🧮</i><h3>Calculator</h3></a>
+                <a href="dashboard.html" class="tool-card"><i>☀️</i><h3>Weather</h3></a>
+                <a href="dashboard.html" class="tool-card"><i>🗓️</i><h3>Calendar</h3></a>
+                <a href="dashboard.html" class="tool-card"><i>🎙️</i><h3>Speech</h3></a>
+            </div>
+        </section>
     </main>
 
-    <script>
-        // Simple 3D Tilt Effect
-        const cards = document.querySelectorAll('.tool');
-        
-        cards.forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                const xPercent = (x / rect.width - 0.5) * 20;
-                const yPercent = (y / rect.height - 0.5) * -20;
-                
-                card.style.transform = `perspective(1000px) rotateX(${yPercent}deg) rotateY(${xPercent}deg) translateY(-10px)`;
-            });
+    <footer>
+        Developed by <b>Mohak Choubey</b> | &copy; 2025 Toolify Inc.
+    </footer>
 
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)`;
-            });
-        });
-    </script>
 </body>
 </html>
