@@ -3,227 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toolbox Hub</title>
-
+    <title>Toolbox Hub | Ultra Edition</title>
     <style>
-        * { box-sizing: border-box; }
-
         :root {
-            --bg1: #2196f3;
-            --bg2: #00bcd4;
-            --card: rgba(255, 255, 255, 0.85);
-            --text: #111;
-            --btn1: #1976d2;
-            --btn2: #00acc1;
-            --loader-bg: #111;
+            --primary: #00d2ff;
+            --secondary: #3a7bd5;
+            --glass: rgba(255, 255, 255, 0.07);
+            --border: rgba(255, 255, 255, 0.15);
+            --text: #ffffff;
         }
 
-        body.dark {
-            --bg1: #0f2027;
-            --bg2: #203a43;
-            --card: rgba(30, 30, 30, 0.9);
-            --text: #fff;
-            --btn1: #37474f;
-            --btn2: #263238;
-            --loader-bg: #000;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* ===== Loader ===== */
-        #loader {
-            position: fixed;
-            inset: 0;
-            background: var(--loader-bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 999;
-            transition: opacity 0.5s ease;
-        }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #444;
-            border-top: 5px solid #00e5ff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* ===== Background ===== */
         body {
-            margin: 0;
             min-height: 100vh;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(120deg, var(--bg1), var(--bg2));
-            background-size: 300% 300%;
-            animation: bgMove 12s ease infinite;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text);
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            color: var(--text);
-            transition: background 0.5s ease, color 0.3s ease;
-        }
-        @keyframes bgMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            overflow-x: hidden;
+            /* ANIMATED MESH BACKGROUND */
+            background: linear-gradient(45deg, #0f2027, #203a43, #2c5364);
+            background-attachment: fixed;
         }
 
-        /* ===== Dark Mode Button ===== */
-        .toggle {
+        /* Ambient Background blobs */
+        .bg-blob {
             position: fixed;
-            top: 15px;
-            right: 15px;
-            font-size: 20px;
-            padding: 10px 14px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            background: var(--card);
-            color: var(--text);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            z-index: 10;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.15) 0%, transparent 70%);
+            z-index: -1;
+            filter: blur(50px);
+            animation: move 25s infinite alternate;
         }
 
-        /* ===== Container ===== */
-        .container {
-            width: 95%;
-            max-width: 750px; /* Slightly wider to accommodate more tools */
-            margin-top: 80px;
-            padding: 40px 30px;
-            border-radius: 22px;
-            background: var(--card);
-            backdrop-filter: blur(12px);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            text-align: center;
-            animation: pop 0.8s ease forwards;
+        @keyframes move {
+            from { transform: translate(-20%, -20%); }
+            to { transform: translate(50%, 40%); }
         }
-        @keyframes pop {
-            from { opacity: 0; transform: translateY(40px); }
+
+        /* NAVBAR */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+        }
+
+        .logo { font-weight: 800; font-size: 1.5rem; letter-spacing: -1px; }
+
+        .nav-btns .signup {
+            background: var(--text);
+            color: #000;
+            padding: 10px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .nav-btns .signup:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255,255,255,0.4);
+        }
+
+        /* CONTAINER */
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 60px 40px;
+            margin-top: 100px;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.5);
+            text-align: center;
+            animation: slideUp 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         h1 {
-            margin-bottom: 35px;
-            font-size: 2.6rem;
-            font-weight: 800;
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to bottom, #fff 40%, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        /* ===== Tools Grid ===== */
-        .link-list {
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.6;
+            margin-bottom: 50px;
+        }
+
+        /* TOOLS GRID */
+        .tools {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 22px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
         }
-        .link-list a {
-            padding: 22px;
-            border-radius: 16px;
+
+        .tool {
+            position: relative;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 24px;
             text-decoration: none;
-            font-size: 18px;
-            font-weight: 600;
-            color: white;
-            background: linear-gradient(135deg, var(--btn1), var(--btn2));
-            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-            transition: transform 0.3s, box-shadow 0.3s;
+            color: #fff;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            overflow: hidden;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-        }
-        .link-list a span {
-            display: inline-block;
-            margin-right: 10px;
-            font-size: 1.4rem;
-            transition: transform 0.3s;
-        }
-        .link-list a:hover {
-            transform: translateY(-6px) scale(1.03);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-        }
-        .link-list a:hover span {
-            transform: rotate(-10deg) scale(1.2);
+            gap: 15px;
+            /* Fade in animation */
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
         }
 
-        /* ===== Footer ===== */
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Tool hover effects */
+        .tool:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .tool span { font-size: 2.5rem; }
+
+        /* Shine sweep effect */
+        .tool::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -150%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: 0.6s;
+        }
+
+        .tool:hover::before { left: 150%; }
+
+        /* Staggered Delay for tools */
+        .tool:nth-child(1) { animation-delay: 0.1s; }
+        .tool:nth-child(2) { animation-delay: 0.2s; }
+        .tool:nth-child(3) { animation-delay: 0.3s; }
+        .tool:nth-child(4) { animation-delay: 0.4s; }
+        .tool:nth-child(5) { animation-delay: 0.5s; }
+        .tool:nth-child(6) { animation-delay: 0.6s; }
+
         footer {
-            margin-top: 40px;
-            padding: 20px;
-            color: var(--text);
-            opacity: 0.8;
-            font-size: 14px;
+            margin-top: 50px;
+            opacity: 0.4;
+            font-weight: 300;
+            letter-spacing: 1px;
         }
 
-        /* ===== Mobile ===== */
-        @media (max-width: 500px) {
-            .link-list { grid-template-columns: 1fr; }
-            h1 { font-size: 2.1rem; }
+        /* RESPONSIVE */
+        @media (max-width: 900px) { .tools { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) {
+            .tools { grid-template-columns: 1fr; }
+            h1 { font-size: 2.5rem; }
+            header { padding: 15px 20px; }
         }
     </style>
 </head>
-
 <body>
 
-<div id="loader"><div class="spinner"></div></div>
+    <div class="bg-blob"></div>
 
-<button class="toggle" onclick="toggleMode()" id="themeBtn">🌙</button>
+    <header>
+        <div class="logo">TOOLBOX.</div>
+        <div class="nav-btns">
+            <a href="#" class="signup">Get Started</a>
+        </div>
+    </header>
 
-<audio id="clickSound" preload="auto">
-    <source src="https://assets.mixkit.co/sfx/preview/mixkit-click-error-1110.mp3" type="audio/mpeg">
-</audio>
+    <main class="container">
+        <h1>Simplify Everything.</h1>
+        <p class="subtitle">Access your digital essentials in one beautiful dashboard.</p>
 
-<div class="container">
-    <h1>🛠️ Toolbox Hub</h1>
+        <div class="tools">
+            <a href="#" class="tool"><span>⏰</span> Alarm</a>
+            <a href="#" class="tool"><span>⏱️</span> Timer</a>
+            <a href="#" class="tool"><span>🧮</span> Calculator</a>
+            <a href="#" class="tool"><span>☀️</span> Weather</a>
+            <a href="#" class="tool"><span>🗓️</span> Calendar</a>
+            <a href="#" class="tool"><span>🎙️</span> Text-to-Speech</a>
+        </div>
 
-    <div class="link-list">
-        <a href="alarm.html" onclick="handleNav(event, 'alarm.html')"><span>⏰</span>Alarm Clock</a>
-        <a href="timer.html" onclick="handleNav(event, 'timer.html')"><span>⏱️</span>Timer</a>
-        <a href="weather.html" onclick="handleNav(event, 'weather.html')"><span>☀️</span>Weather</a>
-        <a href="calculator.html" onclick="handleNav(event, 'calculator.html')"><span>🧮</span>Calculator</a>
-        <a href="calendar.html" onclick="handleNav(event, 'calendar.html')"><span>🗓️</span>Calendar</a>
-        <a href="clock.html" onclick="handleNav(event, 'clock.html')"><span>⌚</span>Digital Clock</a>
+        <footer>Designed by <b>Mohak Choubey</b></footer>
+    </main>
+
+    <script>
+        // Simple 3D Tilt Effect
+        const cards = document.querySelectorAll('.tool');
         
-        <a href="qr.html" onclick="handleNav(event, 'qr.html')"><span>🔍</span>QR Suite</a>
-        <a href="speech.html" onclick="handleNav(event, 'speech.html')"><span>🎙️</span>Text to Speech</a>
-    </div>
-</div>
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const xPercent = (x / rect.width - 0.5) * 20;
+                const yPercent = (y / rect.height - 0.5) * -20;
+                
+                card.style.transform = `perspective(1000px) rotateX(${yPercent}deg) rotateY(${xPercent}deg) translateY(-10px)`;
+            });
 
-<footer>
-    Developed by <strong>Mohak Choubey</strong>
-</footer>
-
-<script>
-    /* Loader cleanup */
-    window.addEventListener('load', () => {
-        const loader = document.getElementById("loader");
-        loader.style.opacity = "0";
-        setTimeout(() => loader.style.display = "none", 500);
-    });
-
-    /* Dark mode logic */
-    const themeBtn = document.getElementById("themeBtn");
-    
-    function toggleMode() {
-        document.body.classList.toggle("dark");
-        const isDark = document.body.classList.contains("dark");
-        localStorage.setItem("mode", isDark);
-        themeBtn.innerText = isDark ? "☀️" : "🌙";
-    }
-
-    if (localStorage.getItem("mode") === "true") {
-        document.body.classList.add("dark");
-        themeBtn.innerText = "☀️";
-    }
-
-    /* Sound and Navigation logic */
-    function handleNav(event, url) {
-        event.preventDefault();
-        const sound = document.getElementById("clickSound");
-        sound.play();
-        
-        setTimeout(() => {
-            window.location.href = url;
-        }, 150); 
-    }
-</script>
-
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)`;
+            });
+        });
+    </script>
 </body>
 </html>
