@@ -3,150 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ultimate Pro Timer</title>
+    <title>Pro Guarded Timer</title>
     <style>
         :root {
             --primary: #6366f1;
-            --accent: #22d3ee;
-            --bg: #030712;
+            --bg: #0f172a;
+            --card: #1e293b;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'SF Pro Display', -apple-system, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
         
         body {
-            background-color: var(--bg);
+            background: var(--bg);
             color: white;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden;
+            padding: 20px;
         }
 
-        /* Ambient Background Glow */
-        .glow {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: var(--primary);
-            filter: blur(120px);
-            opacity: 0.3;
-            z-index: -1;
-            transition: background 1s;
-        }
-
-        .container {
+        .timer-card {
+            background: var(--card);
             width: 100%;
-            max-width: 450px;
-            padding: 30px;
+            max-width: 400px;
+            padding: 2rem;
+            border-radius: 30px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
             text-align: center;
-        }
-
-        /* Time Display */
-        .display-container {
-            margin-bottom: 40px;
         }
 
         #time-display {
-            font-size: 5.5rem;
-            font-weight: 100;
-            letter-spacing: -3px;
+            font-size: 4.5rem;
+            font-weight: 700;
             font-variant-numeric: tabular-nums;
-            text-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+            margin-bottom: 2rem;
+            color: var(--primary);
         }
 
-        .labels {
-            display: flex;
-            justify-content: center;
-            gap: 45px;
-            margin-top: -10px;
-            color: #64748b;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        /* Custom Picker Style */
-        .picker-grid {
+        .input-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 15px;
-            background: rgba(255, 255, 255, 0.03);
-            padding: 20px;
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 40px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 2rem;
         }
 
-        .picker-col { display: flex; flex-direction: column; gap: 5px; }
-        .picker-col label { font-size: 0.7rem; color: #94a3b8; margin-bottom: 5px; }
+        .input-group { display: flex; flex-direction: column; }
+        .input-group label { font-size: 0.7rem; color: #94a3b8; margin-bottom: 5px; font-weight: bold; }
         
         input {
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #0f172a;
+            border: 1px solid #334155;
             color: white;
-            padding: 15px;
+            padding: 12px;
             border-radius: 12px;
             font-size: 1.2rem;
             text-align: center;
-            width: 100%;
         }
 
-        input:focus { outline: 2px solid var(--primary); }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 
-        /* Controls */
-        .controls { display: grid; grid-template-columns: 2fr 1fr; gap: 15px; }
-        
         .btn {
-            padding: 20px;
-            border-radius: 20px;
+            padding: 15px;
+            border-radius: 12px;
             border: none;
-            font-size: 1rem;
-            font-weight: 600;
+            font-weight: bold;
             cursor: pointer;
             transition: 0.2s;
         }
 
-        .btn-start { background: var(--primary); color: white; box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.5); }
-        .btn-reset { background: #1e293b; color: white; }
+        .btn-start { background: var(--primary); color: white; }
+        .btn-reset { background: #475569; color: white; }
         .btn:active { transform: scale(0.95); }
 
-        /* Finished State */
-        .is-finished #time-display { color: #f43f5e; text-shadow: 0 0 30px #f43f5e; animation: shake 0.5s infinite; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .finished { animation: pulse-red 0.5s infinite; }
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.7); }
+            100% { box-shadow: 0 0 0 20px rgba(244, 63, 94, 0); }
+        }
     </style>
 </head>
 <body>
 
-<div class="glow" id="ambient-glow"></div>
+<div class="timer-card" id="card">
+    <div id="time-display">00:00:30</div>
 
-<div class="container" id="app">
-    <div class="display-container">
-        <div id="time-display">00:00:30</div>
-        <div class="labels">
-            <span>Hrs</span>
-            <span>Min</span>
-            <span>Sec</span>
+    <div class="input-grid">
+        <div class="input-group">
+            <label>HRS (0-24)</label>
+            <input type="number" id="h" value="0" min="0" max="24" onchange="validateInputs()">
         </div>
-    </div>
-
-    <div class="picker-grid">
-        <div class="picker-col">
-            <label>HOURS</label>
-            <input type="number" id="h" value="0" min="0" max="99">
+        <div class="input-group">
+            <label>MIN (0-59)</label>
+            <input type="number" id="m" value="0" min="0" max="59" onchange="validateInputs()">
         </div>
-        <div class="picker-col">
-            <label>MINUTES</label>
-            <input type="number" id="m" value="0" min="0" max="59">
-        </div>
-        <div class="picker-col">
-            <label>SECONDS</label>
-            <input type="number" id="s" value="30" min="0" max="59">
+        <div class="input-group">
+            <label>SEC (0-59)</label>
+            <input type="number" id="s" value="30" min="0" max="59" onchange="validateInputs()">
         </div>
     </div>
 
     <div class="controls">
-        <button class="btn btn-start" id="startBtn" onclick="toggleTimer()">START TIMER</button>
+        <button class="btn btn-start" id="startBtn" onclick="toggleTimer()">START</button>
         <button class="btn btn-reset" onclick="resetTimer()">RESET</button>
     </div>
 </div>
@@ -154,57 +112,81 @@
 <script>
     let timeLeft = 30;
     let timerId = null;
+    let isRunning = false;
+
     const display = document.getElementById('time-display');
-    const glow = document.getElementById('ambient-glow');
     const startBtn = document.getElementById('startBtn');
+    const card = document.getElementById('card');
+
+    // Validation: Ensures common sense limits
+    function validateInputs() {
+        const h = document.getElementById('h');
+        const m = document.getElementById('m');
+        const s = document.getElementById('s');
+
+        if (h.value > 24) h.value = 24;
+        if (m.value > 59) m.value = 59;
+        if (s.value > 59) s.value = 59;
+        if (h.value < 0) h.value = 0;
+        if (m.value < 0) m.value = 0;
+        if (s.value < 0) s.value = 0;
+
+        if (!isRunning) {
+            syncTimeFromInputs();
+        }
+    }
+
+    function syncTimeFromInputs() {
+        const h = parseInt(document.getElementById('h').value) || 0;
+        const m = parseInt(document.getElementById('m').value) || 0;
+        const s = parseInt(document.getElementById('s').value) || 0;
+        timeLeft = (h * 3600) + (m * 60) + s;
+        updateDisplay();
+    }
 
     function updateDisplay() {
-        const h = Math.floor(timeLeft / 3600);
-        const m = Math.floor((timeLeft % 3600) / 60);
-        const s = timeLeft % 60;
+        const hrs = Math.floor(timeLeft / 3600);
+        const mins = Math.floor((timeLeft % 3600) / 60);
+        const secs = timeLeft % 60;
         display.textContent = 
-            `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
     function toggleTimer() {
-        if (timerId) {
+        if (isRunning) {
             clearInterval(timerId);
-            timerId = null;
+            isRunning = false;
             startBtn.textContent = 'RESUME';
-            startBtn.style.background = 'var(--primary)';
         } else {
-            // If starting fresh or from reset, pull values from inputs
-            if (startBtn.textContent === 'START TIMER') {
-                const h = parseInt(document.getElementById('h').value) || 0;
-                const m = parseInt(document.getElementById('m').value) || 0;
-                const s = parseInt(document.getElementById('s').value) || 0;
-                timeLeft = (h * 3600) + (m * 60) + s;
-            }
+            if (timeLeft <= 0) syncTimeFromInputs();
+            if (timeLeft <= 0) return;
 
-            if (timeLeft <= 0) return alert("Set a time first!");
-
+            isRunning = true;
             startBtn.textContent = 'PAUSE';
-            startBtn.style.background = '#eab308'; // Amber
-            
             timerId = setInterval(() => {
                 timeLeft--;
                 updateDisplay();
                 if (timeLeft <= 0) {
                     clearInterval(timerId);
-                    timerId = null;
-                    finishTimer();
+                    isRunning = false;
+                    startBtn.textContent = 'START';
+                    card.classList.add('finished');
+                    playAlarm();
                 }
             }, 1000);
         }
     }
 
-    function finishTimer() {
-        document.getElementById('app').classList.add('is-finished');
-        glow.style.background = '#f43f5e';
-        startBtn.textContent = 'START TIMER';
-        
-        // Sound logic - 4 seconds
-        const audioCtx = new AudioContext();
+    function resetTimer() {
+        clearInterval(timerId);
+        isRunning = false;
+        card.classList.remove('finished');
+        startBtn.textContent = 'START';
+        syncTimeFromInputs(); // This fixes the reset button to pull fresh from your inputs
+    }
+
+    function playAlarm() {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         let endTime = audioCtx.currentTime + 4;
         const interval = setInterval(() => {
             if (audioCtx.currentTime >= endTime) {
@@ -214,27 +196,14 @@
             const osc = audioCtx.createOscillator();
             const g = audioCtx.createGain();
             osc.connect(g); g.connect(audioCtx.destination);
-            osc.frequency.value = 523.25; // C5 note
+            osc.frequency.value = 440;
             g.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.4);
-        }, 600);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+        }, 500);
     }
 
-    function resetTimer() {
-        clearInterval(timerId);
-        timerId = null;
-        document.getElementById('app').classList.remove('is-finished');
-        glow.style.background = 'var(--primary)';
-        startBtn.textContent = 'START TIMER';
-        startBtn.style.background = 'var(--primary)';
-        
-        // Reset to input values
-        const h = parseInt(document.getElementById('h').value) || 0;
-        const m = parseInt(document.getElementById('m').value) || 0;
-        const s = parseInt(document.getElementById('s').value) || 0;
-        timeLeft = (h * 3600) + (m * 60) + s;
-        updateDisplay();
-    }
+    // Initialize display on load
+    syncTimeFromInputs();
 </script>
 </body>
 </html>
