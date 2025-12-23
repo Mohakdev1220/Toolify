@@ -2,192 +2,171 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Weather Pro | Toolbox Hub</title>
+    <title>Weather Pro | Toolify Hub</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --glass: rgba(255, 255, 255, 0.15);
-            --primary: #7efaff;
+            --glass: rgba(255, 255, 255, 0.08);
+            --glass-heavy: rgba(255, 255, 255, 0.12);
+            --primary: #00f2ff;
+            --border: rgba(255, 255, 255, 0.1);
         }
 
         body {
             margin: 0; padding: 0;
-            font-family: "Segoe UI", system-ui, sans-serif;
-            background: linear-gradient(135deg, #1e3c72, #2a5298, #7b4397);
-            background-size: 400% 400%;
-            animation: bgMove 15s ease infinite;
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #1e3c72, #000);
             color: white;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        @keyframes bgMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
+        /* Fixed Navigation */
         .back-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--glass);
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 10px 20px;
-            border-radius: 12px;
-            color: white;
-            text-decoration: none;
-            backdrop-filter: blur(10px);
-            font-weight: 600;
+            position: fixed; top: 20px; left: 20px;
+            background: var(--glass); border: 1px solid var(--border);
+            padding: 10px 20px; border-radius: 12px;
+            color: white; text-decoration: none;
+            backdrop-filter: blur(10px); font-weight: 600; transition: 0.3s;
             z-index: 100;
         }
+        .back-btn:hover { background: var(--primary); color: #000; }
 
+        /* Search Section */
         #searchBox {
-            width: 85%;
-            max-width: 500px;
-            padding: 15px 25px;
-            margin: 80px 0 30px 0;
-            font-size: 18px;
-            border-radius: 50px;
-            border: 1px solid rgba(255,255,255,0.3);
-            background: rgba(0,0,0,0.2);
-            color: white;
-            outline: none;
-            text-align: center;
-            backdrop-filter: blur(10px);
+            width: 85%; max-width: 500px;
+            padding: 18px 30px; margin: 100px 0 40px 0;
+            font-size: 18px; border-radius: 50px;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,0.05);
+            color: white; outline: none; text-align: center;
+            backdrop-filter: blur(15px); transition: 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
+        #searchBox:focus { border-color: var(--primary); box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); }
 
-        #loading { font-size: 18px; display: none; margin-bottom: 20px; }
+        #loading { font-size: 16px; display: none; margin-bottom: 20px; color: var(--primary); letter-spacing: 2px; }
 
+        /* Weather Panel */
         .weatherPanel {
-            width: 90%;
-            max-width: 900px;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 30px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            display: none;
-            animation: fadeIn 0.8s ease;
+            width: 90%; max-width: 900px;
+            background: var(--glass); backdrop-filter: blur(25px);
+            border: 1px solid var(--border); border-radius: 32px;
+            padding: 40px; box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            display: none; animation: slideUp 0.6s ease-out;
         }
 
-        @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
 
-        .mainRow { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
-        .leftBlock { display: flex; align-items: center; gap: 20px; }
-        .icon { width: 100px; height: 100px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5)); }
-        .temp { font-size: 60px; font-weight: 800; color: var(--primary); }
-        .condition { font-size: 20px; opacity: 0.9; }
+        .mainRow { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 30px; }
+        
+        .leftBlock { flex: 1; min-width: 250px; text-align: left; }
+        .cityName { font-size: 2rem; font-weight: 800; margin-bottom: 5px; color: #fff; }
+        .temp { font-size: 80px; font-weight: 800; color: var(--primary); line-height: 1; }
+        .condition { font-size: 22px; opacity: 0.7; margin-top: 10px; font-weight: 300; }
+        .icon { width: 120px; height: 120px; filter: drop-shadow(0 0 15px var(--primary)); }
 
         .rightBlock {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            flex-grow: 1;
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 15px; flex: 1.5;
         }
 
         .infoBox {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 15px 10px;
-            border-radius: 18px;
-            font-size: 13px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px 10px; border-radius: 20px;
+            font-size: 12px; text-align: center;
+            border: 1px solid var(--border); transition: 0.3s;
         }
-        .infoBox span { display: block; font-size: 16px; font-weight: bold; margin-top: 5px; color: var(--primary); }
+        .infoBox:hover { background: rgba(255,255,255,0.08); border-color: var(--primary); }
+        .infoBox span { display: block; font-size: 18px; font-weight: 700; margin-top: 8px; color: var(--primary); }
 
-        #forecast {
-            width: 90%;
-            max-width: 900px;
-            margin-top: 25px;
-            display: none;
-        }
-
+        /* Forecast */
+        #forecast { width: 90%; max-width: 900px; margin-top: 40px; padding-bottom: 120px; }
         .forecastRow {
-            display: flex;
-            gap: 15px;
-            overflow-x: auto;
-            padding: 10px 0;
-            scrollbar-width: none;
+            display: flex; gap: 15px; overflow-x: auto;
+            padding: 20px 0; scrollbar-width: none;
         }
-
         .dayCard {
-            min-width: 110px;
-            background: var(--glass);
-            padding: 15px;
-            border-radius: 22px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
+            min-width: 120px; background: var(--glass);
+            padding: 20px; border-radius: 24px; text-align: center;
+            border: 1px solid var(--border); transition: 0.3s;
+        }
+        .dayCard:hover { transform: translateY(-10px); background: var(--glass-heavy); }
+
+        footer {
+            margin-top: auto; width: 100%; padding: 30px;
+            text-align: center; font-size: 0.8rem; letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.4); border-top: 1px solid var(--border);
         }
 
-        @media (max-width: 700px) {
+        @media (max-width: 768px) {
             .rightBlock { grid-template-columns: repeat(2, 1fr); }
-            .mainRow { justify-content: center; text-align: center; }
-            .leftBlock { flex-direction: column; }
+            .leftBlock { text-align: center; }
+            .mainRow { justify-content: center; }
         }
     </style>
 </head>
 <body>
 
-<a href="index.html" class="back-btn">🏠 Hub</a>
+<a href="index.html" class="back-btn">← Back to Hub</a>
 
-<input type="text" id="searchBox" placeholder="🔍 Search city (e.g. Mumbai)..." />
+<input type="text" id="searchBox" placeholder="Enter City (e.g. New York, US)..." />
 
-<div id="loading">✨ Fetching sky data...</div>
+<div id="loading">SCANNING THE SKIES...</div>
 
 <div class="weatherPanel" id="mainWeather">
-    <h2 id="cityName" style="margin:0 0 20px 0; letter-spacing: 1px;"></h2>
     <div class="mainRow">
         <div class="leftBlock">
-            <img id="weatherIcon" class="icon" src="" />
-            <div>
+            <div class="cityName" id="cityName"></div>
+            <div style="display:flex; align-items: center; gap:20px;">
+                <img id="weatherIcon" class="icon" src="" />
                 <div class="temp" id="temperature"></div>
-                <div id="conditionText" class="condition"></div>
             </div>
+            <div id="conditionText" class="condition"></div>
         </div>
         <div class="rightBlock">
-            <div class="infoBox">Feels Like<span id="feelsLike"></span></div>
-            <div class="infoBox">Humidity<span id="humidity"></span></div>
-            <div class="infoBox">Wind Speed<span id="wind"></span></div>
-            <div class="infoBox">Rain<span id="precip"></span></div>
-            <div class="infoBox">Sunrise<span id="sunrise"></span></div>
-            <div class="infoBox">Sunset<span id="sunset"></span></div>
-            <div class="infoBox">Max Temp<span id="maxT"></span></div>
-            <div class="infoBox">Min Temp<span id="minT"></span></div>
+            <div class="infoBox">Feels Like<span id="feelsLike">--</span></div>
+            <div class="infoBox">Humidity<span id="humidity">--</span></div>
+            <div class="infoBox">Wind<span id="wind">--</span></div>
+            <div class="infoBox">Rain<span id="precip">--</span></div>
+            <div class="infoBox">Sunrise<span id="sunrise">--</span></div>
+            <div class="infoBox">Sunset<span id="sunset">--</span></div>
+            <div class="infoBox">Max Temp<span id="maxT">--</span></div>
+            <div class="infoBox">Min Temp<span id="minT">--</span></div>
         </div>
     </div>
 </div>
 
 <div id="forecast">
-    <h3 style="margin-left: 10px;">📅 7-Day Forecast</h3>
+    <h3 style="margin-left: 10px; font-weight: 300; letter-spacing: 1px;">7-DAY FORECAST</h3>
     <div class="forecastRow" id="forecastRow"></div>
 </div>
 
+<footer>DEVELOPED WITH <span style="color:#ff4b2b">♥</span> BY MOHAK</footer>
+
 <script>
-    // --- Utility Functions ---
-    function getIcon(code) {
-        if(code == 0) return "https://img.icons8.com/emoji/96/sun-emoji.png";
-        if([1,2,3].includes(code)) return "https://img.icons8.com/emoji/96/sun-behind-cloud.png";
-        if([45,48].includes(code)) return "https://img.icons8.com/emoji/96/foggy.png";
-        if([61,63,65].includes(code)) return "https://img.icons8.com/emoji/96/cloud-with-rain.png";
-        if([95,96,99].includes(code)) return "https://img.icons8.com/emoji/96/cloud-with-lightning-and-rain.png";
-        return "https://img.icons8.com/emoji/96/cloud-emoji.png";
+    // Improved Weather Condition Logic
+    function getConditionData(code) {
+        const mapping = {
+            0: ["Clear Skies", "https://img.icons8.com/emoji/96/sun-emoji.png"],
+            1: ["Mainly Clear", "https://img.icons8.com/emoji/96/sun-emoji.png"],
+            2: ["Partly Cloudy", "https://img.icons8.com/emoji/96/sun-behind-cloud.png"],
+            3: ["Overcast", "https://img.icons8.com/emoji/96/cloud-emoji.png"],
+            45: ["Foggy", "https://img.icons8.com/emoji/96/foggy.png"],
+            61: ["Slight Rain", "https://img.icons8.com/emoji/96/cloud-with-rain.png"],
+            63: ["Rainy", "https://img.icons8.com/emoji/96/cloud-with-rain.png"],
+            65: ["Heavy Rain", "https://img.icons8.com/emoji/96/cloud-with-rain.png"],
+            95: ["Thunderstorm", "https://img.icons8.com/emoji/96/cloud-with-lightning-and-rain.png"]
+        };
+        return mapping[code] || ["Cloudy", "https://img.icons8.com/emoji/96/cloud-emoji.png"];
     }
 
-    function getConditionText(t){
-        if(t>=40) return "Extremely Hot";
-        if(t>=30) return "Hot";
-        if(t>=20) return "Pleasant";
-        if(t>=10) return "Cool";
-        return "Cold";
-    }
-
-    // --- API Calls ---
     async function getCoordinates(city){
-        const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1`);
+        const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en`);
         const data = await res.json();
         return data.results ? data.results[0] : null;
     }
@@ -199,28 +178,31 @@
     }
 
     function displayWeather(city, w){
-        document.getElementById("cityName").innerText = "📍 " + city;
-        let t = w.current.temperature_2m;
-        document.getElementById("temperature").innerText = Math.round(t) + "°C";
-        document.getElementById("conditionText").innerText = getConditionText(t);
-        document.getElementById("weatherIcon").src = getIcon(w.current.weather_code);
+        document.getElementById("cityName").innerText = city.toUpperCase();
+        let t = Math.round(w.current.temperature_2m);
+        const [condText, condIcon] = getConditionData(w.current.weather_code);
         
-        document.getElementById("feelsLike").innerText = w.current.apparent_temperature + "°";
+        document.getElementById("temperature").innerText = t + "°";
+        document.getElementById("conditionText").innerText = condText;
+        document.getElementById("weatherIcon").src = condIcon;
+        
+        document.getElementById("feelsLike").innerText = Math.round(w.current.apparent_temperature) + "°";
         document.getElementById("humidity").innerText = w.current.relative_humidity_2m + "%";
-        document.getElementById("wind").innerText = w.current.wind_speed_10m + " km/h";
+        document.getElementById("wind").innerText = Math.round(w.current.wind_speed_10m) + " km/h";
         document.getElementById("precip").innerText = w.current.rain + "mm";
         document.getElementById("sunrise").innerText = w.daily.sunrise[0].split("T")[1];
         document.getElementById("sunset").innerText = w.daily.sunset[0].split("T")[1];
-        document.getElementById("maxT").innerText = w.daily.temperature_2m_max[0] + "°";
-        document.getElementById("minT").innerText = w.daily.temperature_2m_min[0] + "°";
+        document.getElementById("maxT").innerText = Math.round(w.daily.temperature_2m_max[0]) + "°";
+        document.getElementById("minT").innerText = Math.round(w.daily.temperature_2m_min[0]) + "°";
 
         let row = "";
         for(let i=0; i<7; i++){
             let date = new Date(w.daily.time[i]).toLocaleDateString('en-US', {weekday: 'short'});
+            const [fText, fIcon] = getConditionData(w.daily.weather_code[i]);
             row += `<div class="dayCard">
-                <div style="font-weight:bold">${date}</div>
-                <img src="${getIcon(w.daily.weather_code[i])}" width="40">
-                <div style="font-size:14px">${Math.round(w.daily.temperature_2m_max[i])}°</div>
+                <div style="font-weight:bold; font-size: 14px; margin-bottom:10px;">${date}</div>
+                <img src="${fIcon}" width="45">
+                <div style="font-size:18px; font-weight:800; margin-top:10px; color:var(--primary)">${Math.round(w.daily.temperature_2m_max[i])}°</div>
             </div>`;
         }
         document.getElementById("forecastRow").innerHTML = row;
@@ -237,7 +219,7 @@
             let loc = await getCoordinates(city);
             if(loc) {
                 let w = await getWeather(loc.latitude, loc.longitude);
-                displayWeather(loc.name, w);
+                displayWeather(loc.name + ", " + (loc.country_code || ""), w);
             } else {
                 alert("City not found!");
                 document.getElementById("loading").style.display = "none";
@@ -245,36 +227,15 @@
         }
     });
 
-    // Auto-load logic
     window.onload = () => {
         navigator.geolocation.getCurrentPosition(async pos => {
             let w = await getWeather(pos.coords.latitude, pos.coords.longitude);
-            displayWeather("Your Location", w);
+            displayWeather("Current Location", w);
         }, async () => {
-            // Default to Indore if GPS fails
-            let w = await getWeather(22.71, 75.85);
+            let w = await getWeather(22.71, 75.85); // Indore default
             displayWeather("Indore", w);
         });
     }
-</script>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyAeHDhdiTRwftUGYgrb1m19v7hm2R5rb-Y",
-        authDomain: "toolbox-hub-98c03.firebaseapp.com",
-        projectId: "toolbox-hub-98c03",
-        appId: "1:321020105472:web:356e7c2903def7b9d859e5"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    onAuthStateChanged(auth, user => {
-        if(!user) window.location.href="login.html";
-    });
 </script>
 </body>
 </html>
