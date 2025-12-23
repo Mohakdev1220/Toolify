@@ -3,294 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-site-verification" content="xrZFu5cpuycZgitIQWcRT0DmD7er9zSVNmzWktTYs10" />
-    <title>Toolbox | Toolify</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    
+    <title>Toolify | Your Workspace</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-mesh: radial-gradient(at 0% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
-                       radial-gradient(at 50% 0%, hsla(225,39%,20%,1) 0, transparent 50%), 
-                       radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text: #ffffff;
-            --accent: #7efaff;
-            --menu-bg: #1a1f2e;
+            --primary: #00f2ff; /* First color of name */
+            --secondary: #ffffff; /* Second color of name */
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
         }
 
-        [data-theme="light"] {
-            --bg-mesh: radial-gradient(at 0% 0%, #e0e7ff 0, transparent 50%), 
-                       radial-gradient(at 50% 0%, #f0fdf4 0, transparent 50%), 
-                       radial-gradient(at 100% 0%, #fff7ed 0, transparent 50%);
-            --glass: rgba(255, 255, 255, 0.6);
-            --glass-border: rgba(0, 0, 0, 0.05);
-            --text: #1f2937;
-            --accent: #2563eb;
-            --menu-bg: #ffffff;
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: #000; color: #fff; overflow: hidden; height: 100vh; }
+
+        /* VIDEO BACKGROUND */
+        #bg-video { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            z-index: -1; 
+            transition: filter 1.2s ease; 
         }
+        .blurred { filter: blur(45px) brightness(0.4); }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            color: var(--text);
-            min-height: 100vh;
-            background-color: #0f172a;
-            background-image: var(--bg-mesh);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow-x: hidden;
-        }
-
-        header {
-            width: 100%;
-            padding: 20px 8%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 10000;
-            backdrop-filter: blur(10px);
-        }
-
-        /* LOGO AREA WITH IMAGE */
-        .logo-area {
+        /* LOGO POSITIONING (Fixed Top Left) */
+        .brand-container {
+            position: fixed;
+            top: 30px;
+            left: 40px;
             display: flex;
             align-items: center;
             gap: 12px;
+            z-index: 1000;
+        }
+        .logo-img { width: 45px; height: 45px; object-fit: contain; }
+        .logo-text { font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; }
+        .logo-text .part1 { color: var(--primary); }
+        .logo-text .part2 { color: var(--secondary); }
+
+        /* PAGE 1: LANDING */
+        #landing-page {
+            height: 100vh; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; text-align: center;
+            transition: 0.8s ease;
         }
 
-        .logo-img {
-            width: 35px; /* Size adjust karein */
-            height: 35px;
-            object-fit: contain;
+        .hero-title { font-size: 4.5rem; font-weight: 800; margin-bottom: 10px; }
+        .hero-title .part1 { color: var(--primary); }
+        .hero-title .part2 { color: var(--secondary); }
+        .tagline { color: #9aa0a6; font-size: 1.2rem; margin-bottom: 40px; }
+
+        .btn-group { display: flex; gap: 15px; }
+        .btn {
+            padding: 14px 35px; border-radius: 12px; cursor: pointer;
+            font-weight: 600; transition: 0.3s; border: 1px solid var(--border);
+            text-decoration: none; font-size: 1rem;
+        }
+        .btn-primary { background: var(--primary); color: #000; border: none; }
+        .btn-primary:hover { box-shadow: 0 0 30px rgba(0, 242, 255, 0.4); transform: scale(1.05); }
+        .btn-outline { background: var(--glass); color: #fff; backdrop-filter: blur(10px); }
+        .btn-outline:hover { background: rgba(255,255,255,0.1); }
+
+        /* PAGE 2: DASHBOARD */
+        #dashboard {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            padding: 120px 8% 40px 8%; display: none; opacity: 0; 
+            transform: scale(1.1); transition: 0.8s all cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
         }
 
-        .logo-text { 
-            font-weight: 800; 
-            font-size: 1.5rem; 
-            letter-spacing: -1px; 
-        }
-        .logo-text span { color: var(--accent); }
-
-        .settings-container { position: relative; }
-        
-        #settingsBtn {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            padding: 12px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.2rem;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .dash-header {
+            display: flex; justify-content: flex-end; align-items: center; 
+            margin-bottom: 40px;
         }
 
-        .settings-menu {
-            position: absolute;
-            top: 65px;
-            right: 0;
-            width: 240px;
-            background: var(--menu-bg);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            padding: 10px;
-            display: none;
-            flex-direction: column;
-            z-index: 10001; 
-            border: 1px solid var(--glass-border);
+        .user-profile {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--glass); padding: 8px 20px; border-radius: 50px;
+            border: 1px solid var(--border);
         }
-
-        .settings-menu.active { display: flex; animation: slideDown 0.3s ease forwards; }
-
-        @keyframes slideDown { 
-            from { opacity: 0; transform: translateY(-10px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
-
-        .menu-item {
-            padding: 14px 18px;
-            border-radius: 12px;
-            text-decoration: none;
-            color: var(--text);
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            width: 100%;
-            text-align: left;
-        }
-
-        .menu-item:hover { background: rgba(126, 250, 255, 0.1); transform: translateX(5px); }
-        .logout-item { color: #ff5f5f; border-top: 1px solid var(--glass-border); margin-top: 8px; }
-
-        .hero {
-            margin-top: 60px;
-            text-align: center;
-            z-index: 1;
-        }
-        .hero h1 { font-size: 4rem; font-weight: 800; letter-spacing: -2px; margin-bottom: 10px; }
-        .hero p { opacity: 0.6; font-size: 1.1rem; }
-
-        .main-container {
-            width: 90%;
-            max-width: 1100px;
-            background: var(--glass);
-            backdrop-filter: blur(30px);
-            border: 1px solid var(--glass-border);
-            border-radius: 40px;
-            padding: 50px;
-            margin: 40px 0;
-            z-index: 5;
-        }
+        .avatar { width: 35px; height: 35px; border-radius: 50%; background: var(--primary); color: #000; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+        .user-info h4 { font-size: 0.9rem; }
+        .user-info p { font-size: 0.7rem; opacity: 0.5; }
 
         .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 25px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px; max-width: 1200px; margin: 0 auto;
+        }
+        .card {
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            padding: 40px 25px; border-radius: 24px; text-decoration: none; color: white;
+            transition: 0.3s; text-align: center;
+        }
+        .card:hover { background: var(--primary); color: #000; transform: translateY(-10px); }
+        .card-icon { font-size: 2.5rem; margin-bottom: 15px; display: block; }
+
+        /* REMINDER POPUP */
+        #reminder {
+            position: fixed; bottom: 30px; right: 30px; width: 300px;
+            background: #111; padding: 20px; border-radius: 20px;
+            border: 1px solid var(--primary); display: none; z-index: 9999;
         }
 
-        .tool-card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--glass-border);
-            padding: 40px 20px;
-            border-radius: 24px;
-            text-decoration: none;
-            color: var(--text);
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .tool-card:hover {
-            background: var(--accent);
-            color: #000;
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-
-        .tool-card .icon { font-size: 2.5rem; }
-        .tool-card span { font-weight: 600; letter-spacing: 1px; text-transform: uppercase; font-size: 0.8rem; }
-
-        footer { margin-top: auto; padding: 40px; opacity: 0.5; font-size: 0.8rem; text-align: center; width: 100%; }
-
-        @media (max-width: 600px) {
-            .hero h1 { font-size: 2.5rem; }
-            .main-container { padding: 25px; }
-        }
+        .show-page { display: block !important; opacity: 1 !important; transform: scale(1) !important; }
+        .hide-page { display: none !important; }
     </style>
 </head>
-<body data-theme="dark">
+<body>
 
-    <header>
-        <div class="logo-area">
-            <img src="logo.png" alt="Toolify Logo" class="logo-img">
-            <div class="logo-text">TOOL<span>IFY </span></div>
-        </div>
-        <div class="nav-right">
-            <div class="settings-container">
-                <button id="settingsBtn" aria-label="Settings">⚙️</button>
-                <div class="settings-menu" id="settingsMenu">
-                    <button class="menu-item" onclick="toggleTheme()" id="themeText">☀️ Light Mode</button>
-                    <a href="privacy.html" class="menu-item">🛡️ Privacy Policy</a>
-                    <a href="terms.html" class="menu-item">📜 Terms & Conditions</a>
-                    <a href="login.html" target="_blank" class="menu-item" id="loginMenuBtn">🔑 Sign In</a>
-                    <button class="menu-item logout-item" id="logoutMenuBtn" onclick="logout()" style="display:none;">🚪 Logout</button>
-                </div>
-            </div>
-        </div>
-    </header>
+    <video autoplay muted loop id="bg-video">
+        <source src="background.mp4" type="video/mp4">
+    </video>
 
-    <div class="hero">
-        <h1 id="welcomeHeader">Toolbox</h1>
-        <p id="userSubText">Your high-performance digital workspace.</p>
+    <div class="brand-container">
+        <img src="logo.png" alt="Toolify Logo" class="logo-img">
+        <div class="logo-text">
+            <span class="part1">Tool</span><span class="part2">ify</span>
+        </div>
     </div>
 
-    <main class="main-container">
-        <div class="tools-grid">
-            <a href="alarm.html" class="tool-card"><div class="icon">⏰</div><span>Alarm</span></a>
-            <a href="calculator.html" class="tool-card"><div class="icon">🧮</div><span>Calculator</span></a>
-            <a href="weather.html" class="tool-card"><div class="icon">☀️</div><span>Weather</span></a>
-            <a href="qr.html" class="tool-card"><div class="icon">🔍</div><span>QR Maker</span></a>
-            <a href="clock.html" class="tool-card"><div class="icon">🕓</div><span>Clock</span></a>
-            <a href="timer.html" class="tool-card"><div class="icon">⌛</div><span>Timer</span></a>
-            <a href="speech.html" class="tool-card"><div class="icon">🗣️</div><span>Text to Speech</span></a>  
-            <a href="calendar.html" class="tool-card"><div class="icon">📅</div><span>Calendar</span></a> 
+    <section id="landing-page">
+        <h1 class="hero-title">
+            <span class="part1">Tool</span><span class="part2">ify</span>
+        </h1>
+        <p class="tagline">The futuristic workspace for digital creators.</p>
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="signIn()">Sign in with Google</button>
+            <button class="btn btn-outline" onclick="enterAsGuest()">Get Started</button>
         </div>
-    </main>
+    </section>
 
-    <footer>DEVELOPED WITH ❤️ BY MOHAK</footer>
+    <section id="dashboard">
+        <div class="dash-header">
+            <div class="user-profile">
+                <div class="avatar" id="avatar-char">G</div>
+                <div class="user-info">
+                    <h4 id="user-name">Guest</h4>
+                    <p id="user-email">No Account</p>
+                </div>
+                <div id="auth-btn-area"></div>
+            </div>
+        </div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        <div class="tools-grid">
+            <a href="alarm.html" class="card"><span class="card-icon">⏰</span><h4>Alarm</h4></a>
+            <a href="calculator.html" class="card"><span class="card-icon">🧮</span><h4>Calculator</h4></a>
+            <a href="weather.html" class="card"><span class="card-icon">☀️</span><h4>Weather</h4></a>
+            <a href="qr.html" class="card"><span class="card-icon">🔍</span><h4>QR Maker</h4></a>
+            <a href="clock.html" class="card"><span class="card-icon">🕓</span><h4>Clock</h4></a>
+            <a href="timer.html" class="card"><span class="card-icon">⌛</span><h4>Timer</h4></a>
+            <a href="speech.html" class="card"><span class="card-icon">🗣️</span><h4>Speech</h4></a>
+            <a href="calendar.html" class="card"><span class="card-icon">📅</span><h4>Calendar</h4></a>
+        </div>
+    </section>
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyAeHDhdiTRwftUGYgrb1m19v7hm2R5rb-Y",
-        authDomain: "toolbox-hub-98c03.firebaseapp.com",
-        projectId: "toolbox-hub-98c03",
-        appId: "1:321020105472:web:356e7c2903def7b9d859e5"
-    };
+    <div id="reminder">
+        <span style="float:right; cursor:pointer;" onclick="this.parentElement.style.display='none'">✕</span>
+        <h4 style="color:var(--primary)">Security Alert</h4>
+        <p style="font-size:0.8rem; margin:10px 0;">Please sign in to keep your session and tools synchronized.</p>
+        <button onclick="signIn()" style="background:none; border:none; color:var(--primary); font-weight:bold; cursor:pointer;">SIGN IN</button>
+    </div>
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    const settingsBtn = document.getElementById('settingsBtn');
-    const settingsMenu = document.getElementById('settingsMenu');
-    
-    settingsBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        settingsMenu.classList.toggle('active');
-    });
+        const firebaseConfig = {
+            apiKey: "AIzaSyAeHDhdiTRwftUGYgrb1m19v7hm2R5rb-Y",
+            authDomain: "toolbox-hub-98c03.firebaseapp.com",
+            projectId: "toolbox-hub-98c03",
+            appId: "1:321020105472:web:356e7c2903def7b9d859e5"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
 
-    document.addEventListener('click', () => settingsMenu.classList.remove('active'));
+        // FLOW LOGIC
+        window.enterAsGuest = () => {
+            document.getElementById('landing-page').classList.add('hide-page');
+            document.getElementById('dashboard').classList.add('show-page');
+            document.getElementById('bg-video').classList.add('blurred'); // Blurs the video
+            document.getElementById('auth-btn-area').innerHTML = `<button onclick="signIn()" style="margin-left:15px; background:none; border:1px solid #fff; color:#fff; padding:4px 12px; border-radius:5px; cursor:pointer;">Sign In</button>`;
+        };
 
-    window.toggleTheme = () => {
-        const body = document.body;
-        const themeText = document.getElementById('themeText');
-        const currentTheme = body.getAttribute('data-theme');
-        if (currentTheme === 'dark') {
-            body.setAttribute('data-theme', 'light');
-            themeText.innerText = "🌙 Dark Mode";
-        } else {
-            body.setAttribute('data-theme', 'dark');
-            themeText.innerText = "☀️ Light Mode";
-        }
-    };
+        window.signIn = async () => {
+            try { await signInWithPopup(auth, provider); } catch(e) {}
+        };
 
-    window.logout = () => {
-        if(confirm("Are you sure you want to sign out?")) signOut(auth);
-    };
+        window.logout = () => signOut(auth).then(() => location.reload());
 
-    onAuthStateChanged(auth, user => {
-        const loginMenuBtn = document.getElementById("loginMenuBtn");
-        const logoutMenuBtn = document.getElementById("logoutMenuBtn");
-        const welcomeHeader = document.getElementById("welcomeHeader");
-        const userSubText = document.getElementById("userSubText");
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('landing-page').classList.add('hide-page');
+                document.getElementById('dashboard').classList.add('show-page');
+                document.getElementById('bg-video').classList.add('blurred'); // Blurs the video
+                document.getElementById('user-name').innerText = "Hi, " + user.displayName.split(' ')[0];
+                document.getElementById('user-email').innerText = user.email;
+                document.getElementById('avatar-char').innerText = user.displayName[0];
+                document.getElementById('auth-btn-area').innerHTML = `<button onclick="logout()" style="margin-left:15px; background:none; border:1px solid #ff5f5f; color:#ff5f5f; padding:4px 12px; border-radius:5px; cursor:pointer;">Sign Out</button>`;
+            }
+        });
 
-        if (user) {
-            loginMenuBtn.style.display = "none";
-            logoutMenuBtn.style.display = "flex";
-            welcomeHeader.innerText = "Hi, " + user.displayName.split(' ')[0];
-            userSubText.innerText = user.email;
-        } else {
-            loginMenuBtn.style.display = "flex";
-            logoutMenuBtn.style.display = "none";
-            welcomeHeader.innerText = "Toolbox";
-            userSubText.innerText = "Your high-performance digital workspace.";
-        }
-    });
-</script>
+        setInterval(() => {
+            if (!auth.currentUser) document.getElementById('reminder').style.display = 'block';
+        }, 30 * 60 * 1000);
+    </script>
 </body>
 </html>
