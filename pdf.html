@@ -12,35 +12,20 @@
 
     <style>
         :root {
-            /* Dark Mode (Default) */
-            --bg: #0a0a0b;
-            --surface: #141416;
-            --text: #ffffff;
-            --text-dim: #9aa0a6;
-            --primary: #00f2ff;
-            --primary-glow: rgba(0, 242, 255, 0.3);
-            --border: rgba(255, 255, 255, 0.08);
-            --danger: #ff4d4d;
-            --card-bg: #1c1c1e;
+            --bg: #0a0a0b; --surface: #141416; --text: #ffffff; --text-dim: #9aa0a6;
+            --primary: #00f2ff; --primary-glow: rgba(0, 242, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.08); --danger: #ff4d4d; --card-bg: #1c1c1e;
         }
 
         [data-theme="light"] {
-            --bg: #f4f7f9;
-            --surface: #ffffff;
-            --text: #1a1a1a;
-            --text-dim: #5f6368;
-            --primary: #0071e3;
-            --primary-glow: rgba(0, 113, 227, 0.2);
-            --border: rgba(0, 0, 0, 0.1);
-            --danger: #d93025;
-            --card-bg: #ffffff;
+            --bg: #f4f7f9; --surface: #ffffff; --text: #1a1a1a; --text-dim: #5f6368;
+            --primary: #0071e3; --primary-glow: rgba(0, 113, 227, 0.1);
+            --border: rgba(0, 0, 0, 0.1); --danger: #d93025; --card-bg: #ffffff;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: background 0.3s, color 0.3s; }
-        
-        body { background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 100px; transition: 0.3s; }
 
-        /* Navigation Bar */
         header {
             position: fixed; top: 0; width: 100%; height: 70px; padding: 0 40px;
             display: flex; justify-content: space-between; align-items: center;
@@ -48,121 +33,121 @@
             backdrop-filter: blur(10px); z-index: 1000;
         }
 
-        .logo { font-weight: 800; font-size: 1.4rem; letter-spacing: -0.5px; }
+        .logo { font-weight: 800; font-size: 1.4rem; }
         .logo span { color: var(--primary); }
 
-        .header-actions { display: flex; align-items: center; gap: 20px; }
+        .workspace { max-width: 1200px; margin: 100px auto 40px; padding: 0 20px; }
 
-        /* Theme Toggle */
-        .theme-btn {
-            background: var(--border); border: none; width: 40px; height: 40px;
-            border-radius: 10px; cursor: pointer; color: var(--text);
-            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+        /* Drafts Section */
+        .drafts-bar {
+            background: var(--surface); border: 1px solid var(--border);
+            padding: 15px; border-radius: 12px; margin-bottom: 20px; display: none;
+        }
+        .draft-item {
+            display: inline-block; padding: 8px 15px; background: var(--bg);
+            border: 1px solid var(--border); border-radius: 8px; margin-right: 10px;
+            font-size: 0.8rem; cursor: pointer;
         }
 
-        /* Main Workspace */
-        .workspace { max-width: 1200px; margin: 100px auto; padding: 0 20px; }
-
-        /* Drop Zone */
         .drop-zone {
             border: 2px dashed var(--border); border-radius: 24px;
             padding: 80px 20px; text-align: center; cursor: pointer;
-            background: var(--surface); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--surface); transition: 0.3s;
         }
-        .drop-zone:hover { border-color: var(--primary); transform: scale(1.01); background: var(--primary-glow); }
-        .drop-zone h2 { font-size: 1.8rem; margin-bottom: 10px; }
-        .drop-zone p { color: var(--text-dim); }
+        .drop-zone:hover { border-color: var(--primary); background: var(--primary-glow); }
 
-        /* Toolbar */
         .toolbar {
-            display: none; align-items: center; justify-content: space-between;
+            display: none; justify-content: space-between; align-items: center;
             background: var(--surface); padding: 15px 25px; border-radius: 16px;
             margin-bottom: 30px; border: 1px solid var(--border);
         }
 
         .pdf-input {
             background: var(--bg); border: 1px solid var(--border);
-            color: var(--text); padding: 10px 15px; border-radius: 8px; outline: none; width: 300px;
+            color: var(--text); padding: 10px 15px; border-radius: 8px; outline: none;
         }
 
-        /* Image Grid */
-        #image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
-        
+        #image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
         .img-card {
             background: var(--card-bg); border: 1px solid var(--border);
-            border-radius: 18px; padding: 12px; position: relative;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05); cursor: grab;
+            border-radius: 18px; padding: 12px; position: relative; cursor: grab;
         }
-        .img-card img { width: 100%; height: 180px; object-fit: cover; border-radius: 12px; margin-bottom: 12px; }
-        
-        .card-check { position: absolute; top: 20px; left: 20px; width: 20px; height: 20px; accent-color: var(--primary); }
+        .img-card img { width: 100%; height: 160px; object-fit: cover; border-radius: 12px; }
 
         .btn {
             padding: 10px 20px; border-radius: 12px; border: none;
-            font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;
-            font-size: 0.9rem; transition: 0.2s;
+            font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.9rem;
         }
-        .btn-primary { background: var(--primary); color: #fff; }
-        [data-theme="dark"] .btn-primary { color: #000; }
-        .btn-danger { background: var(--danger); color: white; }
+        .btn-primary { background: var(--primary); color: #000; }
         .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+        .btn-danger { background: var(--danger); color: white; }
 
-        /* Floating Action Bar */
         .floating-bar {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
             background: var(--surface); border: 1px solid var(--primary);
-            padding: 12px 30px; border-radius: 100px; display: none;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 1000; gap: 15px;
+            padding: 12px 25px; border-radius: 100px; display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 999; gap: 15px;
         }
 
-        /* Modal */
+        /* Footer */
+        footer {
+            position: fixed; bottom: 0; width: 100%; padding: 20px;
+            text-align: center; font-size: 0.8rem; color: var(--text-dim);
+            background: var(--bg); border-top: 1px solid var(--border);
+        }
+        .heart { color: #ff0000; }
+
         #crop-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 2000; padding: 40px;
         }
-        .crop-wrap { max-width: 900px; margin: 0 auto; height: 75vh; }
     </style>
 </head>
 <body data-theme="dark">
 
     <header>
         <div class="logo">Tool<span>ify</span> PDF</div>
-        <div class="header-actions">
-            <button class="theme-btn" onclick="toggleTheme()">🌓</button>
-            <div id="file-name-container" style="display: none;">
-                <input type="text" id="pdf-name" class="pdf-input" placeholder="Project Name...">
-            </div>
+        <div style="display:flex; gap:15px; align-items:center;">
+            <button class="btn btn-outline" style="padding: 8px 15px;" onclick="createNew()">+ Create New</button>
+            <button class="theme-btn" style="background:none; border:none; cursor:pointer; font-size:1.2rem;" onclick="toggleTheme()">🌓</button>
         </div>
     </header>
 
     <main class="workspace">
+        <div id="drafts-section" class="drafts-bar">
+            <p style="font-size: 0.7rem; margin-bottom: 10px; color: var(--text-dim);">RECENT DRAFTS:</p>
+            <div id="drafts-list"></div>
+        </div>
+
         <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
-            <h2>Create Your PDF</h2>
+            <h2>Start Your PDF Project</h2>
             <p>Drag images here or click to browse</p>
             <input type="file" id="file-input" multiple accept="image/*" hidden onchange="processFiles(this.files)">
         </div>
 
         <div class="toolbar" id="main-toolbar">
-            <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
-                <input type="checkbox" id="master-select" onclick="selectAll()"> Select All
-            </label>
-            <button class="btn btn-danger" id="del-btn" style="display:none;" onclick="deleteImages()">Delete Selected</button>
+            <input type="text" id="pdf-name" class="pdf-input" placeholder="Document Name..." oninput="autoSave()">
+            <label style="cursor:pointer;"><input type="checkbox" id="master-select" onclick="selectAll()"> Select All</label>
+            <button class="btn btn-danger" id="del-btn" style="display:none; padding: 5px 15px;" onclick="deleteSelected()">Delete</button>
         </div>
 
         <div id="image-grid"></div>
     </main>
 
     <div class="floating-bar" id="float-bar">
-        <button class="btn btn-outline" onclick="document.getElementById('file-input').click()">+ Add Images</button>
-        <div style="width: 1px; height: 20px; background: var(--border);"></div>
+        <button class="btn btn-outline" onclick="document.getElementById('file-input').click()">Add More</button>
         <button class="btn btn-primary" onclick="exportPDF()">Download PDF</button>
     </div>
 
+    <footer>
+        DEVELOPED WITH <span class="heart">♥</span> BY MOHAK
+    </footer>
+
     <div id="crop-modal">
-        <div class="crop-wrap"><img id="crop-preview"></div>
-        <div style="display:flex; justify-content:center; gap:15px; margin-top:30px;">
-            <button class="btn btn-primary" onclick="applyCrop()">Save Changes</button>
-            <button class="btn btn-outline" style="color:white;" onclick="closeCrop()">Cancel</button>
+        <div style="max-width:800px; margin:0 auto; height:70vh;"><img id="crop-preview"></div>
+        <div style="text-align:center; margin-top:20px;">
+            <button class="btn btn-primary" onclick="applyCrop()">Apply</button>
+            <button class="btn btn-outline" style="color:white" onclick="closeCrop()">Cancel</button>
         </div>
     </div>
 
@@ -171,10 +156,18 @@
         let cropper = null;
         let activeIndex = null;
 
+        window.onload = () => {
+            loadDraftsList();
+            const lastSession = localStorage.getItem('toolify_current_session');
+            if(lastSession) {
+                items = JSON.parse(lastSession);
+                document.getElementById('pdf-name').value = localStorage.getItem('toolify_current_name') || "";
+                refreshUI();
+            }
+        };
+
         function toggleTheme() {
-            const body = document.body;
-            const current = body.getAttribute('data-theme');
-            body.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+            document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
         }
 
         function processFiles(files) {
@@ -183,9 +176,46 @@
                 reader.onload = (e) => {
                     items.push({ src: e.target.result, selected: false });
                     refreshUI();
+                    autoSave();
                 };
                 reader.readAsDataURL(file);
             });
+        }
+
+        function autoSave() {
+            localStorage.setItem('toolify_current_session', JSON.stringify(items));
+            localStorage.setItem('toolify_current_name', document.getElementById('pdf-name').value);
+        }
+
+        function createNew() {
+            if(items.length > 0) {
+                const name = document.getElementById('pdf-name').value || "Untitled Draft";
+                let drafts = JSON.parse(localStorage.getItem('toolify_drafts') || '[]');
+                drafts.push({ name: name, data: items, date: new Date().toLocaleDateString() });
+                localStorage.setItem('toolify_drafts', JSON.stringify(drafts));
+            }
+            items = [];
+            document.getElementById('pdf-name').value = "";
+            localStorage.removeItem('toolify_current_session');
+            refreshUI();
+            loadDraftsList();
+        }
+
+        function loadDraftsList() {
+            const drafts = JSON.parse(localStorage.getItem('toolify_drafts') || '[]');
+            const container = document.getElementById('drafts-section');
+            const list = document.getElementById('drafts-list');
+            if(drafts.length > 0) {
+                container.style.display = 'block';
+                list.innerHTML = drafts.map((d, i) => `<div class="draft-item" onclick="loadDraft(${i})">${d.name} (${d.date})</div>`).join('');
+            }
+        }
+
+        function loadDraft(index) {
+            const drafts = JSON.parse(localStorage.getItem('toolify_drafts') || '[]');
+            items = drafts[index].data;
+            document.getElementById('pdf-name').value = drafts[index].name;
+            refreshUI();
         }
 
         function refreshUI() {
@@ -193,83 +223,55 @@
             document.getElementById('drop-zone').style.display = hasData ? 'none' : 'block';
             document.getElementById('main-toolbar').style.display = hasData ? 'flex' : 'none';
             document.getElementById('float-bar').style.display = hasData ? 'flex' : 'none';
-            document.getElementById('file-name-container').style.display = hasData ? 'block' : 'none';
-
+            
             const grid = document.getElementById('image-grid');
             grid.innerHTML = '';
-
             items.forEach((item, idx) => {
                 const el = document.createElement('div');
                 el.className = 'img-card';
                 el.innerHTML = `
-                    <input type="checkbox" class="card-check" ${item.selected ? 'checked' : ''} onchange="toggleSelect(${idx})">
+                    <input type="checkbox" style="position:absolute; top:15px; left:15px;" ${item.selected ? 'checked' : ''} onchange="toggleSelect(${idx})">
                     <img src="${item.src}">
-                    <button class="btn btn-outline" style="width:100%; justify-content:center;" onclick="startCrop(${idx})">✏️ Edit Image</button>
+                    <button class="btn btn-outline" style="width:100%; margin-top:10px; font-size:0.7rem;" onclick="startCrop(${idx})">Edit Image</button>
                 `;
                 grid.appendChild(el);
             });
-
-            const selectedCount = items.filter(i => i.selected).length;
-            document.getElementById('del-btn').style.display = selectedCount > 0 ? 'block' : 'none';
         }
 
-        function toggleSelect(idx) {
-            items[idx].selected = !items[idx].selected;
-            refreshUI();
-        }
-
-        function selectAll() {
-            const val = document.getElementById('master-select').checked;
-            items.forEach(i => i.selected = val);
-            refreshUI();
-        }
-
-        function deleteImages() {
-            if(confirm("Are you sure? This will remove selected images.")) {
-                items = items.filter(i => !i.selected);
-                document.getElementById('master-select').checked = false;
-                refreshUI();
-            }
-        }
+        function toggleSelect(idx) { items[idx].selected = !items[idx].selected; refreshUI(); }
+        function selectAll() { const v = document.getElementById('master-select').checked; items.forEach(i => i.selected = v); refreshUI(); }
+        function deleteSelected() { items = items.filter(i => !i.selected); autoSave(); refreshUI(); }
 
         function startCrop(idx) {
             activeIndex = idx;
-            const modal = document.getElementById('crop-modal');
+            document.getElementById('crop-modal').style.display = 'block';
             const img = document.getElementById('crop-preview');
             img.src = items[idx].src;
-            modal.style.display = 'block';
             if(cropper) cropper.destroy();
-            cropper = new Cropper(img, { viewMode: 2, autoCropArea: 1 });
+            cropper = new Cropper(img, { viewMode: 2 });
         }
 
         function applyCrop() {
-            const canvas = cropper.getCroppedCanvas({ width: 1800 });
-            items[activeIndex].src = canvas.toDataURL('image/jpeg', 0.9);
-            closeCrop();
-            refreshUI();
+            items[activeIndex].src = cropper.getCroppedCanvas().toDataURL('image/jpeg', 0.9);
+            autoSave(); closeCrop(); refreshUI();
         }
-
         function closeCrop() { document.getElementById('crop-modal').style.display = 'none'; }
 
         async function exportPDF() {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ compress: true });
-            const title = document.getElementById('pdf-name').value || 'Toolify_Document';
-            
+            const doc = new jsPDF();
             items.forEach((item, i) => {
                 if(i > 0) doc.addPage();
-                doc.addImage(item.src, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+                doc.addImage(item.src, 'JPEG', 0, 0, 210, 297);
             });
-            doc.save(`${title}.pdf`);
+            doc.save(`${document.getElementById('pdf-name').value || 'toolify'}.pdf`);
         }
 
-        new Sortable(document.getElementById('image-grid'), {
-            animation: 200,
-            onEnd: () => {
-                const currentImages = Array.from(document.querySelectorAll('.img-card img')).map(img => img.src);
-                items.sort((a, b) => currentImages.indexOf(a.src) - currentImages.indexOf(b.src));
-            }
-        });
+        new Sortable(document.getElementById('image-grid'), { animation: 150, onEnd: () => {
+            const imgs = Array.from(document.querySelectorAll('.img-card img')).map(i => i.src);
+            items.sort((a,b) => imgs.indexOf(a.src) - imgs.indexOf(b.src));
+            autoSave();
+        }});
     </script>
 </body>
 </html>
