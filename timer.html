@@ -1,363 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toolify Timer | Pro Workspace</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.15);
-            --text: #ffffff;
-            --accent: #7efaff;
-            --panel-bg: #1a1f2e;
-        }
-
-        [data-theme="light"] {
-            --glass: rgba(255, 255, 255, 0.4);
-            --glass-border: rgba(0, 0, 0, 0.1);
+            --bg: #f0f2f5;
+            --accent: #4f46e5;
             --text: #1f2937;
-            --accent: #2563eb;
-            --panel-bg: #ffffff;
+            --card-bg: #ffffff;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; transition: all 0.3s ease; }
 
         body {
+            background-color: var(--bg);
+            font-family: 'Inter', -apple-system, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #0f172a;
-            background-size: cover;
-            background-position: center;
-            overflow: hidden;
-        }
-
-        /* Brand Header */
-        .nav-header {
-            position: absolute;
-            top: 0; width: 100%;
-            padding: 20px 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .brand-area {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
+            margin: 0;
             color: var(--text);
         }
 
-        .logo-img { width: 32px; height: 32px; object-fit: contain; }
-        .brand-text { font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; }
-
-        .settings-btn {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            color: var(--text);
-            width: 45px; height: 45px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.3rem;
-            backdrop-filter: blur(10px);
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        /* Timer UI Card */
         .timer-card {
-            background: var(--glass);
-            backdrop-filter: blur(25px);
-            border: 1px solid var(--glass-border);
-            padding: 50px;
-            border-radius: 40px;
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 32px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
             text-align: center;
-            color: var(--text);
             width: 90%;
-            max-width: 550px;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.3);
+            max-width: 400px;
+            position: relative;
         }
 
-        .time-display {
-            font-size: 6rem;
-            font-weight: 800;
-            margin-bottom: 25px;
-            letter-spacing: -3px;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .input-group {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-bottom: 30px;
-        }
-
-        .input-group input {
-            width: 75px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid var(--glass-border);
-            color: var(--text);
-            padding: 12px;
+        /* Responsive Settings Icon */
+        .settings-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #f3f4f6;
+            border: none;
             border-radius: 12px;
-            text-align: center;
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-
-        /* Action Group */
-        .action-group {
+            width: 48px; /* Large touch target */
+            height: 48px;
+            cursor: pointer;
             display: flex;
-            gap: 15px;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
         }
 
-        .btn-main {
-            background: var(--text);
-            color: #000;
-            border: none;
-            padding: 15px 40px;
-            border-radius: 15px;
+        .settings-btn:active { transform: scale(0.9); }
+        .settings-btn svg { width: 24px; height: 24px; color: #6b7280; }
+
+        /* The Timer Display */
+        .display {
+            font-size: 5rem;
             font-weight: 800;
-            cursor: pointer;
-            text-transform: uppercase;
-            min-width: 160px;
+            font-variant-numeric: tabular-nums;
+            margin: 1.5rem 0;
+            letter-spacing: -2px;
         }
 
-        .btn-refresh {
-            background: rgba(255,255,255,0.1);
-            color: var(--text);
-            border: 1px solid var(--glass-border);
-            width: 55px; height: 55px;
-            border-radius: 15px;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem;
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
         }
 
-        .btn-refresh:disabled { opacity: 0.3; cursor: not-allowed; }
-
-        /* Settings Panel */
-        .settings-panel {
-            position: absolute;
-            top: 75px; right: 5%;
-            width: 320px;
-            background: var(--panel-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 25px;
-            padding: 25px;
-            display: none;
-            z-index: 2000;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-
-        .settings-panel.active { display: block; animation: slideIn 0.3s ease; }
-
-        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Close Button inside Settings */
-        .close-settings {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: transparent;
+        button.main-btn {
+            padding: 16px 32px;
+            border-radius: 16px;
             border: none;
-            color: var(--text);
-            font-size: 1.2rem;
-            cursor: pointer;
-            opacity: 0.6;
-        }
-        .close-settings:hover { opacity: 1; }
-
-        .setting-item { margin-bottom: 20px; }
-        .setting-item label { display: block; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 10px; opacity: 0.6; color: var(--text); font-weight: 700; }
-
-        .bg-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-
-        .bg-thumb {
-            width: 100%; height: 50px;
-            border-radius: 8px;
-            cursor: pointer;
-            object-fit: cover;
-            border: 2px solid transparent;
-            background: #333; /* Placeholder */
-        }
-        .bg-thumb:hover { border-color: var(--accent); }
-
-        .control-btn {
-            width: 100%; padding: 12px;
-            border-radius: 10px;
-            border: 1px solid var(--glass-border);
-            background: rgba(120,120,120,0.1);
-            color: var(--text);
-            cursor: pointer;
             font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
         }
+
+        .start { background: var(--accent); color: white; flex: 2; }
+        .reset { background: #e5e7eb; color: var(--text); flex: 1; }
+
+        button:hover { opacity: 0.9; }
     </style>
 </head>
-<body data-theme="dark">
+<body>
 
-    <div class="nav-header">
-        <a href="index.html" class="brand-area">
-            <img src="logo.png" alt="Logo" class="logo-img">
-            <span class="brand-text">TOOLIFY TIMER</span>
-        </a>
-        <button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+<div class="timer-card">
+    <button class="settings-btn" onclick="alert('Settings Opened')">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+    </button>
+
+    <div class="display" id="timer">00:05</div>
+
+    <div class="controls">
+        <button class="main-btn start" id="startBtn" onclick="toggleTimer()">Start</button>
+        <button class="main-btn reset" onclick="resetTimer()">Reset</button>
     </div>
+</div>
 
-    <div class="settings-panel" id="settingsPanel">
-        <button class="close-settings" onclick="toggleSettings()">✕</button>
-        
-        <div class="setting-item" style="margin-top: 10px;">
-            <label>Interface</label>
-            <button class="control-btn" onclick="toggleTheme()" id="themeBtn">☀️ Light Mode</button>
-        </div>
+<script>
+    let timeLeft = 5; // Set to 5 seconds for testing
+    let timerId = null;
+    const display = document.getElementById('timer');
 
-        <div class="setting-item">
-            <label>HD Backgrounds</label>
-            <div class="bg-grid">
-                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=400" class="bg-thumb" onclick="setBg(this.src)" title="Mountains">
-                <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=400" class="bg-thumb" onclick="setBg(this.src)" title="Sea">
-               <img src="https://images.unsplash.com/photo-1449034446853-66c86144b0ad?q=80&w=400" class="bg-thumb" onclick="setBg(this.src)" title="Sunset City">
-                <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=400" class="bg-thumb" onclick="setBg(this.src)" title="Stars">
-                <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=400" class="bg-thumb" onclick="setBg(this.src)" title="Forest">
-                <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=400" class="bg-thumb" onclick="setBg(this.src)" title="Lake">
-            </div>
-        </div>
+    // Browser-native sound synthesis (No file needed!)
+    function playAlarm() {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let endTime = audioCtx.currentTime + 4; // Play for 4 seconds
 
-        <div class="setting-item">
-            <label>Custom Look</label>
-            <input type="color" oninput="applyColor(this.value)" style="width:100%; height:40px; border:none; background:none; cursor:pointer; margin-bottom:10px;">
-            <input type="file" id="fileIn" hidden onchange="handleFile(event)">
-            <button class="control-btn" onclick="document.getElementById('fileIn').click()">📤 Upload Photo</button>
-        </div>
-    </div>
-
-    <div class="timer-card">
-        <div class="time-display" id="display">00:00:00</div>
-        
-        <div class="input-group">
-            <input type="number" id="h" placeholder="HH" min="0" max="23">
-            <input type="number" id="m" placeholder="MM" min="0" max="59">
-            <input type="number" id="s" placeholder="SS" min="0" max="59">
-        </div>
-
-        <div class="action-group">
-            <button class="btn-main" id="startBtn" onclick="toggleTimer()">Start Timer</button>
-            <button class="btn-refresh" id="refreshBtn" title="Reset Timer" onclick="clearTimer()">🔄</button>
-        </div>
-    </div>
-
-    <script>
-        let timer;
-        let totalSeconds = 0;
-        let isRunning = false;
-
-        function initTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            document.body.setAttribute('data-theme', savedTheme);
-            document.getElementById('themeBtn').innerText = savedTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
-        }
-        initTheme();
-
-        function toggleSettings() { document.getElementById('settingsPanel').classList.toggle('active'); }
-
-        function toggleTheme() {
-            const current = document.body.getAttribute('data-theme');
-            const newTheme = current === 'dark' ? 'light' : 'dark';
-            document.body.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            document.getElementById('themeBtn').innerText = newTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
-        }
-
-        function toggleTimer() {
-            const btn = document.getElementById('startBtn');
-            const refreshBtn = document.getElementById('refreshBtn');
-            
-            if (!isRunning) {
-                const hh = parseInt(document.getElementById('h').value) || 0;
-                const mm = parseInt(document.getElementById('m').value) || 0;
-                const ss = parseInt(document.getElementById('s').value) || 0;
-                totalSeconds = (hh * 3600) + (mm * 60) + ss;
-
-                if (totalSeconds <= 0) return;
-                
-                isRunning = true;
-                btn.innerText = "Stop";
-                btn.style.background = "#ff5f5f";
-                btn.style.color = "#fff";
-                refreshBtn.disabled = true;
-                
-                timer = setInterval(() => {
-                    totalSeconds--;
-                    updateDisplay();
-                    if (totalSeconds <= 0) {
-                        clearInterval(timer);
-                        alert("Time's Up!");
-                        stopTimerUI();
-                    }
-                }, 1000);
-            } else {
-                stopTimerUI();
+        const interval = setInterval(() => {
+            if (audioCtx.currentTime >= endTime) {
+                clearInterval(interval);
+                return;
             }
-        }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.type = 'sine';
+            osc.frequency.value = 880;
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.5);
+        }, 600);
+    }
 
-        function stopTimerUI() {
-            clearInterval(timer);
-            isRunning = false;
-            const btn = document.getElementById('startBtn');
-            const refreshBtn = document.getElementById('refreshBtn');
-            btn.innerText = "Start Timer";
-            btn.style.background = "var(--text)";
-            btn.style.color = (document.body.getAttribute('data-theme') === 'dark') ? "#000" : "#fff";
-            refreshBtn.disabled = false;
-        }
+    function updateDisplay() {
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        display.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
 
-        function clearTimer() {
-            totalSeconds = 0;
-            document.getElementById('h').value = '';
-            document.getElementById('m').value = '';
-            document.getElementById('s').value = '';
-            updateDisplay();
+    function toggleTimer() {
+        if (timerId) {
+            clearInterval(timerId);
+            timerId = null;
+            document.getElementById('startBtn').textContent = 'Start';
+        } else {
+            document.getElementById('startBtn').textContent = 'Pause';
+            timerId = setInterval(() => {
+                timeLeft--;
+                updateDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(timerId);
+                    playAlarm();
+                    alert("Time is up!");
+                    resetTimer();
+                }
+            }, 1000);
         }
+    }
 
-        function updateDisplay() {
-            const hrs = Math.floor(totalSeconds / 3600);
-            const mins = Math.floor((totalSeconds % 3600) / 60);
-            const secs = totalSeconds % 60;
-            document.getElementById('display').innerText = 
-                `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-        }
-
-        // Fixed Image Links Logic
-        function setBg(src) {
-            // Remove the thumbnail query and get high-res
-            const baseSrc = src.split('?')[0];
-            document.body.style.backgroundImage = `url('${baseSrc}?q=80&w=1920')`;
-            document.body.style.backgroundColor = "transparent";
-        }
-
-        function applyColor(color) { document.body.style.backgroundImage = "none"; document.body.style.backgroundColor = color; }
-        
-        function handleFile(e) {
-            const reader = new FileReader();
-            reader.onload = (ev) => { document.body.style.backgroundImage = `url('${ev.target.result}')`; };
-            reader.readAsDataURL(e.target.files[0]);
-        }
-
-        // Set initial background
-        document.body.style.backgroundImage = "url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1920')";
-    </script>
+    function resetTimer() {
+        clearInterval(timerId);
+        timerId = null;
+        timeLeft = 25 * 60; // Default to 25 mins
+        updateDisplay();
+        document.getElementById('startBtn').textContent = 'Start';
+    }
+</script>
 </body>
 </html>
-
