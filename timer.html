@@ -3,184 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Custom Pro Timer</title>
+    <title>Ultimate Pro Timer</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root {
+            --primary: #6366f1;
+            --accent: #22d3ee;
+            --bg: #030712;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'SF Pro Display', -apple-system, sans-serif; }
         
         body {
-            background: #0f172a;
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: white;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            color: white;
             overflow: hidden;
         }
 
-        .app-container {
-            position: relative;
+        /* Ambient Background Glow */
+        .glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: var(--primary);
+            filter: blur(120px);
+            opacity: 0.3;
+            z-index: -1;
+            transition: background 1s;
+        }
+
+        .container {
             width: 100%;
-            max-width: 400px;
-            padding: 20px;
+            max-width: 450px;
+            padding: 30px;
             text-align: center;
         }
 
-        /* Settings Button */
-        .settings-trigger {
-            position: absolute;
-            top: 10px;
-            right: 25px;
-            width: 50px;
-            height: 50px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 20;
+        /* Time Display */
+        .display-container {
+            margin-bottom: 40px;
         }
 
-        /* Progress Circle */
-        .timer-circle-container {
-            position: relative;
-            width: min(75vw, 300px);
-            height: min(75vw, 300px);
-            margin: 40px auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        svg {
-            position: absolute;
-            transform: rotate(-90deg);
-            width: 100%;
-            height: 100%;
-        }
-
-        circle {
-            fill: none;
-            stroke-width: 10;
-            stroke-linecap: round;
-        }
-
-        .bg-circle { stroke: rgba(255, 255, 255, 0.05); }
-        .progress-circle {
-            stroke: #38bdf8;
-            stroke-dasharray: 880;
-            stroke-dashoffset: 0;
-            transition: stroke-dashoffset 0.3s linear;
-        }
-
-        .time-text {
-            font-size: clamp(3rem, 15vw, 4.5rem);
-            font-weight: 200;
+        #time-display {
+            font-size: 5.5rem;
+            font-weight: 100;
+            letter-spacing: -3px;
             font-variant-numeric: tabular-nums;
+            text-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
         }
 
-        /* Modal / Settings Overlay */
-        #settingsModal {
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.95);
-            display: none;
-            flex-direction: column;
+        .labels {
+            display: flex;
             justify-content: center;
-            align-items: center;
-            z-index: 100;
-            backdrop-filter: blur(10px);
+            gap: 45px;
+            margin-top: -10px;
+            color: #64748b;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        .modal-content {
-            width: 80%;
-            max-width: 300px;
+        /* Custom Picker Style */
+        .picker-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 40px;
         }
 
+        .picker-col { display: flex; flex-direction: column; gap: 5px; }
+        .picker-col label { font-size: 0.7rem; color: #94a3b8; margin-bottom: 5px; }
+        
         input {
-            width: 100%;
-            padding: 15px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid #38bdf8;
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: white;
+            padding: 15px;
+            border-radius: 12px;
             font-size: 1.2rem;
-            margin: 20px 0;
             text-align: center;
+            width: 100%;
         }
 
-        /* Buttons */
-        .btn-group { display: flex; flex-direction: column; gap: 12px; }
+        input:focus { outline: 2px solid var(--primary); }
+
+        /* Controls */
+        .controls { display: grid; grid-template-columns: 2fr 1fr; gap: 15px; }
+        
         .btn {
+            padding: 20px;
+            border-radius: 20px;
             border: none;
-            padding: 16px;
-            border-radius: 16px;
             font-size: 1rem;
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
+            transition: 0.2s;
         }
 
-        .btn-primary { background: #38bdf8; color: #0f172a; }
-        .btn-secondary { background: rgba(255,255,255,0.1); color: white; }
+        .btn-start { background: var(--primary); color: white; box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.5); }
+        .btn-reset { background: #1e293b; color: white; }
+        .btn:active { transform: scale(0.95); }
 
-        .urgent { animation: pulse-red 1s infinite; }
-        @keyframes pulse-red {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); text-shadow: 0 0 10px red; }
-            100% { transform: scale(1); }
-        }
+        /* Finished State */
+        .is-finished #time-display { color: #f43f5e; text-shadow: 0 0 30px #f43f5e; animation: shake 0.5s infinite; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
     </style>
 </head>
 <body>
 
-<div id="settingsModal">
-    <div class="modal-content">
-        <h3>Set Duration (Seconds)</h3>
-        <input type="number" id="durationInput" placeholder="Enter seconds..." value="30">
-        <button class="btn btn-primary" style="width:100%" onclick="applySettings()">APPLY</button>
-        <button class="btn btn-secondary" style="width:100%; margin-top:10px;" onclick="closeSettings()">CANCEL</button>
-    </div>
-</div>
+<div class="glow" id="ambient-glow"></div>
 
-<div class="app-container">
-    <div class="settings-trigger" onclick="openSettings()">
-        <svg style="transform:none; width:24px; height:24px" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
-        </svg>
+<div class="container" id="app">
+    <div class="display-container">
+        <div id="time-display">00:00:30</div>
+        <div class="labels">
+            <span>Hrs</span>
+            <span>Min</span>
+            <span>Sec</span>
+        </div>
     </div>
 
-    <div class="timer-circle-container" id="timerRing">
-        <svg viewBox="0 0 300 300">
-            <circle class="bg-circle" cx="150" cy="150" r="140"></circle>
-            <circle id="progress" class="progress-circle" cx="150" cy="150" r="140"></circle>
-        </svg>
-        <div class="time-text" id="display">00:30</div>
+    <div class="picker-grid">
+        <div class="picker-col">
+            <label>HOURS</label>
+            <input type="number" id="h" value="0" min="0" max="99">
+        </div>
+        <div class="picker-col">
+            <label>MINUTES</label>
+            <input type="number" id="m" value="0" min="0" max="59">
+        </div>
+        <div class="picker-col">
+            <label>SECONDS</label>
+            <input type="number" id="s" value="30" min="0" max="59">
+        </div>
     </div>
 
-    <div class="btn-group">
-        <button class="btn btn-primary" id="startBtn" onclick="toggleTimer()">START</button>
-        <button class="btn btn-secondary" onclick="resetTimer()">RESET</button>
+    <div class="controls">
+        <button class="btn btn-start" id="startBtn" onclick="toggleTimer()">START TIMER</button>
+        <button class="btn btn-reset" onclick="resetTimer()">RESET</button>
     </div>
 </div>
 
 <script>
-    let totalTime = 30;
     let timeLeft = 30;
     let timerId = null;
-    const circumference = 2 * Math.PI * 140;
-
-    const display = document.getElementById('display');
-    const progress = document.getElementById('progress');
+    const display = document.getElementById('time-display');
+    const glow = document.getElementById('ambient-glow');
     const startBtn = document.getElementById('startBtn');
-    const timerRing = document.getElementById('timerRing');
 
-    function updateUI() {
-        const mins = Math.floor(timeLeft / 60);
-        const secs = timeLeft % 60;
-        display.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        const offset = circumference - (timeLeft / totalTime) * circumference;
-        progress.style.strokeDashoffset = offset;
+    function updateDisplay() {
+        const h = Math.floor(timeLeft / 3600);
+        const m = Math.floor((timeLeft % 3600) / 60);
+        const s = timeLeft % 60;
+        display.textContent = 
+            `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     }
 
     function toggleTimer() {
@@ -188,60 +171,70 @@
             clearInterval(timerId);
             timerId = null;
             startBtn.textContent = 'RESUME';
+            startBtn.style.background = 'var(--primary)';
         } else {
+            // If starting fresh or from reset, pull values from inputs
+            if (startBtn.textContent === 'START TIMER') {
+                const h = parseInt(document.getElementById('h').value) || 0;
+                const m = parseInt(document.getElementById('m').value) || 0;
+                const s = parseInt(document.getElementById('s').value) || 0;
+                timeLeft = (h * 3600) + (m * 60) + s;
+            }
+
+            if (timeLeft <= 0) return alert("Set a time first!");
+
             startBtn.textContent = 'PAUSE';
+            startBtn.style.background = '#eab308'; // Amber
+            
             timerId = setInterval(() => {
                 timeLeft--;
-                updateUI();
+                updateDisplay();
                 if (timeLeft <= 0) {
                     clearInterval(timerId);
                     timerId = null;
-                    timerRing.classList.add('urgent');
-                    playBeepLoop();
+                    finishTimer();
                 }
             }, 1000);
         }
     }
 
-    function playBeepLoop() {
-        const ctx = new AudioContext();
-        let count = 0;
+    function finishTimer() {
+        document.getElementById('app').classList.add('is-finished');
+        glow.style.background = '#f43f5e';
+        startBtn.textContent = 'START TIMER';
+        
+        // Sound logic - 4 seconds
+        const audioCtx = new AudioContext();
+        let endTime = audioCtx.currentTime + 4;
         const interval = setInterval(() => {
-            if (count >= 5) { clearInterval(interval); return; }
-            let osc = ctx.createOscillator();
-            let gain = ctx.createGain();
-            osc.connect(gain); gain.connect(ctx.destination);
-            osc.frequency.value = 800;
-            gain.gain.setValueAtTime(0.1, ctx.currentTime);
-            osc.start(); osc.stop(ctx.currentTime + 0.3);
-            count++;
-        }, 800);
+            if (audioCtx.currentTime >= endTime) {
+                clearInterval(interval);
+                return;
+            }
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            osc.connect(g); g.connect(audioCtx.destination);
+            osc.frequency.value = 523.25; // C5 note
+            g.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+        }, 600);
     }
 
     function resetTimer() {
         clearInterval(timerId);
         timerId = null;
-        timeLeft = totalTime;
-        timerRing.classList.remove('urgent');
-        startBtn.textContent = 'START';
-        updateUI();
+        document.getElementById('app').classList.remove('is-finished');
+        glow.style.background = 'var(--primary)';
+        startBtn.textContent = 'START TIMER';
+        startBtn.style.background = 'var(--primary)';
+        
+        // Reset to input values
+        const h = parseInt(document.getElementById('h').value) || 0;
+        const m = parseInt(document.getElementById('m').value) || 0;
+        const s = parseInt(document.getElementById('s').value) || 0;
+        timeLeft = (h * 3600) + (m * 60) + s;
+        updateDisplay();
     }
-
-    // Modal Functions
-    function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
-    function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
-    function applySettings() {
-        const newSeconds = parseInt(document.getElementById('durationInput').value);
-        if (newSeconds > 0) {
-            totalTime = newSeconds;
-            resetTimer();
-            closeSettings();
-        }
-    }
-
-    // Init
-    progress.style.strokeDasharray = circumference;
-    updateUI();
 </script>
 </body>
 </html>
