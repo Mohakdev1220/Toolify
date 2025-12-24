@@ -8,7 +8,7 @@
     <style>
         :root {
             --glass: rgba(255, 255, 255, 0.08);
-            --glass-heavy: rgba(255, 255, 255, 0.12);
+            --glass-heavy: rgba(255, 255, 255, 0.15);
             --primary: #00f2ff;
             --border: rgba(255, 255, 255, 0.1);
         }
@@ -32,24 +32,57 @@
             padding: 10px 20px; border-radius: 12px;
             color: white; text-decoration: none;
             backdrop-filter: blur(10px); font-weight: 600; transition: 0.3s;
-            z-index: 100;
+            z-index: 1000;
         }
         .back-btn:hover { background: var(--primary); color: #000; }
 
-        /* Search Section */
-        #searchBox {
+        /* Search Section & Autocomplete */
+        .search-container {
+            position: relative;
             width: 85%; max-width: 500px;
-            padding: 18px 30px; margin: 100px 0 40px 0;
+            margin: 100px 0 40px 0;
+            z-index: 500;
+        }
+
+        #searchBox {
+            width: 100%;
+            padding: 18px 30px;
             font-size: 18px; border-radius: 50px;
             border: 1px solid var(--border);
             background: rgba(255,255,255,0.05);
             color: white; outline: none; text-align: center;
             backdrop-filter: blur(15px); transition: 0.3s;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-sizing: border-box;
         }
+
         #searchBox:focus { border-color: var(--primary); box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); }
 
-        #loading { font-size: 16px; display: none; margin-bottom: 20px; color: var(--primary); letter-spacing: 2px; }
+        .autocomplete-list {
+            position: absolute;
+            top: 70px; left: 0; right: 0;
+            background: rgba(15, 15, 15, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        }
+
+        .suggestion-item {
+            padding: 15px 25px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            transition: 0.2s;
+            text-align: left;
+        }
+
+        .suggestion-item:hover { background: var(--glass-heavy); color: var(--primary); }
+        .suggestion-item span { display: block; font-size: 12px; opacity: 0.6; margin-top: 4px; }
+
+        #loading { font-size: 14px; display: none; margin-bottom: 20px; color: var(--primary); letter-spacing: 2px; }
 
         /* Weather Panel */
         .weatherPanel {
@@ -63,35 +96,27 @@
         @keyframes slideUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
 
         .mainRow { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 30px; }
-        
         .leftBlock { flex: 1; min-width: 250px; text-align: left; }
-        .cityName { font-size: 2rem; font-weight: 800; margin-bottom: 5px; color: #fff; }
+        .cityName { font-size: 1.8rem; font-weight: 800; margin-bottom: 5px; color: #fff; }
+        .locationDetails { font-size: 14px; opacity: 0.6; margin-bottom: 15px; }
         .temp { font-size: 80px; font-weight: 800; color: var(--primary); line-height: 1; }
         .condition { font-size: 22px; opacity: 0.7; margin-top: 10px; font-weight: 300; }
-        .icon { width: 120px; height: 120px; filter: drop-shadow(0 0 15px var(--primary)); }
+        .icon { width: 100px; height: 100px; filter: drop-shadow(0 0 15px var(--primary)); }
 
-        .rightBlock {
-            display: grid; grid-template-columns: repeat(4, 1fr);
-            gap: 15px; flex: 1.5;
-        }
-
+        .rightBlock { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; flex: 1.5; }
         .infoBox {
             background: rgba(255, 255, 255, 0.03);
-            padding: 20px 10px; border-radius: 20px;
-            font-size: 12px; text-align: center;
+            padding: 15px 10px; border-radius: 20px;
+            font-size: 11px; text-align: center;
             border: 1px solid var(--border); transition: 0.3s;
         }
-        .infoBox:hover { background: rgba(255,255,255,0.08); border-color: var(--primary); }
-        .infoBox span { display: block; font-size: 18px; font-weight: 700; margin-top: 8px; color: var(--primary); }
+        .infoBox span { display: block; font-size: 16px; font-weight: 700; margin-top: 6px; color: var(--primary); }
 
         /* Forecast */
-        #forecast { width: 90%; max-width: 900px; margin-top: 40px; padding-bottom: 120px; }
-        .forecastRow {
-            display: flex; gap: 15px; overflow-x: auto;
-            padding: 20px 0; scrollbar-width: none;
-        }
+        #forecast { width: 90%; max-width: 900px; margin-top: 40px; padding-bottom: 80px; display: none; }
+        .forecastRow { display: flex; gap: 15px; overflow-x: auto; padding: 20px 0; scrollbar-width: none; }
         .dayCard {
-            min-width: 120px; background: var(--glass);
+            min-width: 110px; background: var(--glass);
             padding: 20px; border-radius: 24px; text-align: center;
             border: 1px solid var(--border); transition: 0.3s;
         }
@@ -114,14 +139,18 @@
 
 <a href="index.html" class="back-btn">← Back to Hub</a>
 
-<input type="text" id="searchBox" placeholder="Enter City (e.g. New York, US)..." />
+<div class="search-container">
+    <input type="text" id="searchBox" placeholder="Search City, State or Pincode..." autocomplete="off" />
+    <div id="autocompleteList" class="autocomplete-list"></div>
+</div>
 
-<div id="loading">SCANNING THE SKIES...</div>
+<div id="loading">FETCHING DATA...</div>
 
 <div class="weatherPanel" id="mainWeather">
     <div class="mainRow">
         <div class="leftBlock">
             <div class="cityName" id="cityName"></div>
+            <div class="locationDetails" id="locationDetails"></div>
             <div style="display:flex; align-items: center; gap:20px;">
                 <img id="weatherIcon" class="icon" src="" />
                 <div class="temp" id="temperature"></div>
@@ -149,7 +178,10 @@
 <footer>DEVELOPED WITH <span style="color:#ff4b2b">♥</span> BY MOHAK</footer>
 
 <script>
-    // Improved Weather Condition Logic
+    const searchBox = document.getElementById("searchBox");
+    const suggestionList = document.getElementById("autocompleteList");
+    let debounceTimer;
+
     function getConditionData(code) {
         const mapping = {
             0: ["Clear Skies", "https://img.icons8.com/emoji/96/sun-emoji.png"],
@@ -165,10 +197,42 @@
         return mapping[code] || ["Cloudy", "https://img.icons8.com/emoji/96/cloud-emoji.png"];
     }
 
-    async function getCoordinates(city){
-        const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en`);
-        const data = await res.json();
-        return data.results ? data.results[0] : null;
+    // New Autocomplete function
+    async function fetchSuggestions(query) {
+        if (query.length < 2) {
+            suggestionList.style.display = "none";
+            return;
+        }
+
+        try {
+            const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=8&language=en&format=json`);
+            const data = await res.json();
+
+            if (data.results) {
+                suggestionList.innerHTML = "";
+                data.results.forEach(loc => {
+                    const div = document.createElement("div");
+                    div.className = "suggestion-item";
+                    
+                    const state = loc.admin1 ? loc.admin1 : "";
+                    const country = loc.country ? loc.country : "";
+                    const pincodeStr = loc.postcodes ? ` (${loc.postcodes[0]})` : "";
+
+                    div.innerHTML = `${loc.name} ${pincodeStr} <span>${state}${state ? ', ' : ''}${country}</span>`;
+                    
+                    div.onclick = async () => {
+                        searchBox.value = loc.name;
+                        suggestionList.style.display = "none";
+                        document.getElementById("loading").style.display = "block";
+                        
+                        const weatherData = await getWeather(loc.latitude, loc.longitude);
+                        displayWeather(loc, weatherData);
+                    };
+                    suggestionList.appendChild(div);
+                });
+                suggestionList.style.display = "block";
+            }
+        } catch (err) { console.error("Search Error", err); }
     }
 
     async function getWeather(lat, lon){
@@ -177,8 +241,10 @@
         return await res.json();
     }
 
-    function displayWeather(city, w){
-        document.getElementById("cityName").innerText = city.toUpperCase();
+    function displayWeather(loc, w){
+        document.getElementById("cityName").innerText = loc.name.toUpperCase();
+        document.getElementById("locationDetails").innerText = `${loc.admin1 || ''}, ${loc.country || ''}`;
+        
         let t = Math.round(w.current.temperature_2m);
         const [condText, condIcon] = getConditionData(w.current.weather_code);
         
@@ -200,8 +266,8 @@
             let date = new Date(w.daily.time[i]).toLocaleDateString('en-US', {weekday: 'short'});
             const [fText, fIcon] = getConditionData(w.daily.weather_code[i]);
             row += `<div class="dayCard">
-                <div style="font-weight:bold; font-size: 14px; margin-bottom:10px;">${date}</div>
-                <img src="${fIcon}" width="45">
+                <div style="font-weight:bold; font-size: 13px; margin-bottom:10px; opacity:0.8;">${date}</div>
+                <img src="${fIcon}" width="40">
                 <div style="font-size:18px; font-weight:800; margin-top:10px; color:var(--primary)">${Math.round(w.daily.temperature_2m_max[i])}°</div>
             </div>`;
         }
@@ -211,29 +277,31 @@
         document.getElementById("loading").style.display = "none";
     }
 
-    document.getElementById("searchBox").addEventListener("keypress", async e => {
-        if(e.key === "Enter"){
-            let city = e.target.value.trim();
-            if(!city) return;
-            document.getElementById("loading").style.display = "block";
-            let loc = await getCoordinates(city);
-            if(loc) {
-                let w = await getWeather(loc.latitude, loc.longitude);
-                displayWeather(loc.name + ", " + (loc.country_code || ""), w);
-            } else {
-                alert("City not found!");
-                document.getElementById("loading").style.display = "none";
-            }
-        }
+    // Debounce search so it doesn't call API on every keystroke
+    searchBox.addEventListener("input", (e) => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            fetchSuggestions(e.target.value);
+        }, 300);
+    });
+
+    // Close suggestions when clicking away
+    document.addEventListener("click", (e) => {
+        if (e.target !== searchBox) suggestionList.style.display = "none";
     });
 
     window.onload = () => {
         navigator.geolocation.getCurrentPosition(async pos => {
-            let w = await getWeather(pos.coords.latitude, pos.coords.longitude);
-            displayWeather("Current Location", w);
+            const w = await getWeather(pos.coords.latitude, pos.coords.longitude);
+            displayWeather({name: "Current Location", admin1: "Detected"}, w);
         }, async () => {
-            let w = await getWeather(22.71, 75.85); // Indore default
-            displayWeather("Indore", w);
+            // Default to Indore if location fails
+            const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=Indore&count=1`);
+            const data = await res.json();
+            if(data.results){
+                const w = await getWeather(data.results[0].latitude, data.results[0].longitude);
+                displayWeather(data.results[0], w);
+            }
         });
     }
 </script>
