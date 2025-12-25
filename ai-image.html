@@ -72,6 +72,7 @@ button {
   font-weight: bold;
   cursor: pointer;
   margin-top: 22px;
+  transition: 0.3s;
 }
 
 button.loading {
@@ -158,7 +159,10 @@ button:disabled {
   <div class="limit" id="limitText"></div>
   <div id="imageBox"></div>
 
-  <a class="download-btn" href="index.html" style="display:block;text-align:center;margin-top:20px;background:none;color:#bbb;">← Back</a>
+  <a class="download-btn" href="index.html"
+     style="display:block;text-align:center;margin-top:20px;background:none;color:#bbb;">
+     ← Back
+  </a>
 </div>
 </div>
 
@@ -167,8 +171,9 @@ const WORKER_URL = "https://wispy-limit-562f.mohakchoubey.workers.dev";
 const DAILY_LIMIT = 8;
 
 const bannedWords = [
-  "nude","sex","porn","xxx","boobs","breast",
-  "erotic","adult","nsfw","naked","bikini"
+  "nude","sex","porn","xxx","boobs","breast","erotic",
+  "adult","nsfw","naked","bikini","vagina","penis",
+  "lingerie","hot girl","kiss","bed"
 ];
 
 const promptInput = document.getElementById("prompt");
@@ -201,7 +206,7 @@ generateBtn.onclick = async () => {
   }
 
   if (getUsage() >= DAILY_LIMIT) {
-    imageBox.innerHTML = `<div class="error-box">Daily limit reached (8 images)</div>`;
+    imageBox.innerHTML = `<div class="error-box">Daily limit reached. Try tomorrow ⏳</div>`;
     return;
   }
 
@@ -216,7 +221,7 @@ generateBtn.onclick = async () => {
   generateBtn.disabled = true;
   generateBtn.classList.add("loading");
   generateBtn.innerText = "Generating...";
-  loader.innerText = "🎨 AI is working...";
+  loader.innerText = "🎨 AI is generating your image...";
 
   try {
     const res = await fetch(WORKER_URL, {
@@ -226,19 +231,27 @@ generateBtn.onclick = async () => {
     });
 
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error);
+    if (!res.ok || !data.image) {
+      throw new Error("Image could not be generated. Try again.");
+    }
 
     imageBox.innerHTML = `
       <img src="${data.image}">
       <br>
-      <a class="download-btn" href="${data.image}" download="ai-image.png">⬇ Download</a>
+      <a class="download-btn" href="${data.image}" download="ai-image.png">
+        ⬇ Download Image
+      </a>
     `;
 
     incUsage();
     updateLimit();
 
   } catch (e) {
-    imageBox.innerHTML = `<div class="error-box">${e.message}</div>`;
+    imageBox.innerHTML = `
+      <div class="error-box">
+        ⚠️ ${e.message}
+      </div>
+    `;
   } finally {
     generateBtn.disabled = false;
     generateBtn.classList.remove("loading");
@@ -251,4 +264,3 @@ updateLimit();
 </script>
 </body>
 </html>
-
