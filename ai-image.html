@@ -72,7 +72,6 @@ button {
   font-weight: bold;
   cursor: pointer;
   margin-top: 22px;
-  transition: 0.3s;
 }
 
 button.loading {
@@ -130,7 +129,7 @@ button:disabled {
   color: #bbb;
 }
 
-/* 📱 Mobile */
+/* Mobile */
 @media (max-width: 600px) {
   h1 { font-size: 2rem; }
   .card { padding: 20px; }
@@ -143,7 +142,7 @@ button:disabled {
 <h1>🧠 AI Creator</h1>
 
 <div class="card">
-  <textarea id="prompt" placeholder="Describe the image you want to create..."></textarea>
+  <textarea id="prompt" placeholder="Describe the image you want to create..." maxlength="1000"></textarea>
 
   <select id="style">
     <option value="">No Style</option>
@@ -154,15 +153,14 @@ button:disabled {
   </select>
 
   <button id="generateBtn">Generate Art</button>
-
   <div class="loader" id="loader"></div>
   <div class="limit" id="limitText"></div>
   <div id="imageBox"></div>
 
-  <a class="download-btn" href="index.html"
-     style="display:block;text-align:center;margin-top:20px;background:none;color:#bbb;">
-     ← Back
-  </a>
+  <button class="download-btn" onclick="resetPrompt()" 
+          style="display:block;width:100%;margin-top:20px;background:#666;">
+    🔄 New Image
+  </button>
 </div>
 </div>
 
@@ -182,36 +180,45 @@ const loader = document.getElementById("loader");
 const imageBox = document.getElementById("imageBox");
 const limitText = document.getElementById("limitText");
 
-function todayKey() {
-  return "ai_" + new Date().toISOString().slice(0,10);
-}
-function getUsage() {
-  return parseInt(localStorage.getItem(todayKey()) || "0");
-}
-function incUsage() {
-  localStorage.setItem(todayKey(), getUsage() + 1);
-}
-function updateLimit() {
-  limitText.innerText = `Daily Uses: ${getUsage()} / ${DAILY_LIMIT}`;
+// --- Usage Functions ---
+function todayKey() { return "ai_" + new Date().toISOString().slice(0,10); }
+function getUsage() { return parseInt(localStorage.getItem(todayKey()) || "0"); }
+function incUsage() { localStorage.setItem(todayKey(), getUsage() + 1); }
+function updateLimit() { limitText.innerText = `Daily Uses: ${getUsage()} / ${DAILY_LIMIT}`; }
+function resetPrompt() {
+  promptInput.value = "";
+  imageBox.innerHTML = "";
+  loader.innerText = "";
 }
 
+// --- Download Function ---
+function downloadImage(dataUrl, filename) {
+  const link = document.createElement('a');
+  link.href = dataUrl;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+// --- Generate Image ---
 generateBtn.onclick = async () => {
   const prompt = promptInput.value.trim();
   imageBox.innerHTML = "";
   loader.innerText = "";
 
-  if (!prompt) {
-    imageBox.innerHTML = `<div class="error-box">Please enter a prompt ✍️</div>`;
+  if (!prompt || prompt.length < 3) {
+    imageBox.innerHTML = `<div class="error-box">Please enter a prompt (3+ characters) ✍️</div>`;
     return;
   }
 
   if (getUsage() >= DAILY_LIMIT) {
-    imageBox.innerHTML = `<div class="error-box">Daily limit reached. Try tomorrow ⏳</div>`;
+    imageBox.innerHTML = `<div class="error-box">Daily limit reached (${DAILY_LIMIT}). Try tomorrow ⏳</div>`;
     return;
   }
 
   if (bannedWords.some(w => prompt.toLowerCase().includes(w))) {
-    imageBox.innerHTML = `<div class="error-box">NSFW content is not allowed 🚫</div>`;
+    imageBox.innerHTML = `<div class="error-box">NSFW content not allowed 🚫</div>`;
     return;
   }
 
@@ -223,41 +230,45 @@ generateBtn.onclick = async () => {
   generateBtn.innerText = "Generating...";
   loader.innerText = "🎨 AI is generating your image...";
 
-  try {
-    const res = await fetch(WORKER_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: finalPrompt })
-    });
+  let attempts = 0;
+  const maxAttempts = 2; // retry once if failed
 
-    const data = await res.json();
-    if (!res.ok || !data.image) {
-      throw new Error("Image could not be generated. Try again.");
+  while (attempts < maxAttempts) {
+    try {
+      const res = await fetch(WORKER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: finalPrompt })
+      });
+
+      if (!res.ok) throw new Error(`Server error: ${res.status}`);
+      const data = await res.json();
+
+      if (!data || !data.image) throw new Error(data?.error || "AI failed to generate image.");
+
+      imageBox.innerHTML = `
+        <img src="${data.image}" style="max-width:100%;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+        <br>
+        <a class="download-btn" onclick="downloadImage('${data.image}','ai-image.png')" href="javascript:void(0)">⬇ Download PNG</a>
+      `;
+
+      incUsage();
+      updateLimit();
+      break; // success, exit retry loop
+
+    } catch (e) {
+      attempts++;
+      if (attempts >= maxAttempts) {
+        imageBox.innerHTML = `<div class="error-box">⚠️ ${e.message}</div>`;
+        console.error('Generation error:', e);
+      }
     }
-
-    imageBox.innerHTML = `
-      <img src="${data.image}">
-      <br>
-      <a class="download-btn" href="${data.image}" download="ai-image.png">
-        ⬇ Download Image
-      </a>
-    `;
-
-    incUsage();
-    updateLimit();
-
-  } catch (e) {
-    imageBox.innerHTML = `
-      <div class="error-box">
-        ⚠️ ${e.message}
-      </div>
-    `;
-  } finally {
-    generateBtn.disabled = false;
-    generateBtn.classList.remove("loading");
-    generateBtn.innerText = "Generate Art";
-    loader.innerText = "";
   }
+
+  generateBtn.disabled = false;
+  generateBtn.classList.remove("loading");
+  generateBtn.innerText = "Generate Art";
+  loader.innerText = "";
 };
 
 updateLimit();
