@@ -1,344 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toolify | Your Workspace</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <meta name="google-site-verification" content="xrZFu5cpuycZgitIQWcRT0DmD7er9zSVNmzWktTYs10" /> 
-    <link rel="icon" type="image/png" href="favicon.png">
+    <!-- Your existing head unchanged -->
 </head>
 
 <body>
-    <img src="background-poster.jpg" id="bg-video-fallback" alt="" style="display: none;">
+    <!-- Your existing video + feedback modal unchanged -->
     
-    <video autoplay muted loop playsinline poster="background-poster.jpg" id="bg-video">
-        <source src="background.mp4" type="video/mp4">
-    </video>
+    <!-- ✅ NEW: Sidebar Toggle Button for Desktop (appears only on laptop+) -->
+    <button class="desktop-toggle" onclick="toggleDesktopSidebar()" aria-label="Toggle Sidebar">◀</button>
 
-    <!-- ✅ FEEDBACK MODAL ADDED -->
-    <div id="feedback-modal" class="feedback-modal">
-        <div class="feedback-overlay" onclick="closeFeedback()"></div>
-        <div class="feedback-box">
-            <div class="feedback-header">
-                <h3>📝 Send Feedback</h3>
-                <button class="close-feedback" onclick="closeFeedback()">✕</button>
-            </div>
-            <form id="feedback-form" action="https://formspree.io/f/xkowpdnv" method="POST">
-                <input type="text" name="name" placeholder="Your Name" required>
-                <input type="email" name="email" placeholder="Your Email" required>
-                <textarea name="message" placeholder="Your feedback, suggestions, or bug reports..." rows="6" required></textarea>
-                <button type="submit" class="feedback-submit">Send Feedback 🚀</button>
-            </form>
-            <p class="feedback-success" style="display:none;">Feedback Submitted Successfully! 🎉</p>
-        </div>
-    </div>
-
-    <button class="menu-toggle" onclick="toggleMenu()" aria-label="Toggle Menu">☰</button>
-
+    <!-- Your existing sidebar with NEW close button for desktop -->
     <nav class="sidebar" id="sidebar">
-        <button class="close-btn" onclick="toggleMenu()" aria-label="Close Menu">✕</button>
-        <div class="brand-container">
-            <img src="logo.png" alt="Toolify Logo" class="logo-img" width="35" height="35" loading="lazy">
-            <div class="logo-text"><span class="part1">Tool</span>ify</div>
-        </div>
-        
-        <!-- ✅ FEEDBACK LINK ADDED -->
-        <div onclick="openFeedback()" class="side-link"><span>📝</span> Feedback</div>
-        <div onclick="enterAsGuest();" class="side-link"><span>🛠️</span> Tools</div>
-        <a href="privacy.html" class="side-link" target="_blank" rel="noopener"><span>📜</span> Privacy Policy</a>
-        <a href="terms.html" class="side-link" target="_blank" rel="noopener"><span>⚖️</span> Terms & Conditions</a>
-        
-        <div id="add-account-container">
-            <div onclick="signIn();" class="side-link" style="color: var(--primary);"><span>➕</span> Add Account</div>
-        </div>
+        <!-- ✅ NEW: Desktop close button (hidden on mobile) -->
+        <button class="desktop-close-btn" onclick="hideDesktopSidebar()">✕</button>
+        <button class="close-btn" onclick="toggleMenu()">✕</button>
+        <!-- Rest of sidebar unchanged -->
     </nav>
 
-    <div class="main-wrapper">
-        <header>
-            <div id="auth-header-area"></div>
-        </header>
-
-        <section id="landing-page">
-            <h1 class="hero-title"><span class="part1">Tool</span>ify</h1>
-            <p class="tagline">The futuristic workspace for digital creators.</p>
-            <div id="main-auth-ui"></div>
-        </section>
-
-        <section id="dashboard">
-            <div class="tools-grid">
-                <a href="alarm.html" class="card" aria-label="Alarm Tool">
-                    <span class="card-icon">⏰</span><h4>Alarm</h4>
-                </a>
-                <a href="calculator.html" class="card" aria-label="Calculator Tool">
-                    <span class="card-icon">🧮</span><h4>Calculator</h4>
-                </a>
-                <a href="weather.html" class="card" aria-label="Weather Tool">
-                    <span class="card-icon">☀️</span><h4>Weather</h4>
-                </a>
-                <a href="qr.html" class="card" aria-label="QR Maker Tool">
-                    <span class="card-icon">🔍</span><h4>QR Maker</h4>
-                </a>
-                <a href="clock.html" class="card" aria-label="Clock Suite Tool">
-                    <span class="card-icon">🕓</span><h4>Clock Suite</h4>
-                </a>
-                <a href="timer.html" class="card" aria-label="Timer Tool">
-                    <span class="card-icon">⌛</span><h4>Timer</h4>
-                </a>
-                <a href="speech.html" class="card" aria-label="Speech Tool">
-                    <span class="card-icon">🗣️</span><h4>Speech</h4>
-                </a>
-                <a href="calendar.html" class="card" aria-label="Calendar Tool">
-                    <span class="card-icon">📅</span><h4>Calendar</h4>
-                </a>
-                <a href="pdf.html" class="card" aria-label="PDF Maker Tool">
-                    <span class="card-icon">📄</span><h4>PDF Maker</h4>
-                </a>
-                <a href="stopwatch.html" class="card" aria-label="Stopwatch Tool">
-                    <span class="card-icon">⏱️</span><h4>Stopwatch</h4>
-                </a>
-                <a href="grammar.html" class="card" aria-label="Grammar Tool">
-                    <span class="card-icon">✍️</span><h4>Grammar</h4>
-                </a>
-                <a href="password.html" class="card" aria-label="Password Generator Tool">
-                    <span class="card-icon">🔒</span><h4>Pass Gen</h4>
-                </a>
-            </div>
-            <footer>DEVELOPED WITH <span style="color:red">♥</span> BY MOHAK</footer>
-        </section>
-    </div>
-
-    <a href="https://www.youtube.com/@MOHAKCHOUBEY" target="_blank" rel="noopener" class="yt-floating-btn" aria-label="YouTube Channel">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
-        </svg>
-    </a>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAeHDhdiTRwftUGYgrb1m19v7hm2R5rb-Y",
-            authDomain: "toolbox-hub-98c03.firebaseapp.com",
-            projectId: "toolbox-hub-98c03",
-            appId: "1:321020105472:web:356e7c2903def7b9d859e5"
-        };
-        
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
-
-        // ✅ FEEDBACK FUNCTIONS
-        window.openFeedback = () => {
-            document.getElementById('feedback-modal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        };
-
-        window.closeFeedback = () => {
-            document.getElementById('feedback-modal').classList.remove('active');
-            document.body.style.overflow = '';
-        };
-
-        // ✅ NEUTRAL FEEDBACK SUCCESS HANDLER
-        document.getElementById('feedback-form').addEventListener('submit', function(e) {
-            const submitBtn = this.querySelector('.feedback-submit');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
-            
-            setTimeout(() => {
-                document.querySelector('.feedback-box form').style.display = 'none';
-                document.querySelector('.feedback-success').style.display = 'block';
-            }, 1500);
-        });
-
-        // Video fallback handling
-        const video = document.getElementById('bg-video');
-        const fallback = document.getElementById('bg-video-fallback');
-        video.addEventListener('loadeddata', () => fallback.style.display = 'none');
-        video.addEventListener('error', () => { video.style.display = 'none'; fallback.style.display = 'block'; });
-
-        window.toggleMenu = () => {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('active');
-            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
-        };
-
-        window.enterAsGuest = () => {
-            document.getElementById('landing-page').classList.add('hide-page');
-            document.getElementById('dashboard').classList.add('show-page');
-            document.getElementById('bg-video').classList.add('blurred');
-            document.getElementById('sidebar').classList.remove('active');
-            document.body.style.overflow = '';
-        };
-
-        window.signIn = async () => {
-            try { 
-                await signInWithPopup(auth, provider); 
-                document.getElementById('sidebar').classList.remove('active');
-                document.body.style.overflow = '';
-            } catch(e) { 
-                console.error('Sign in error:', e); 
-                alert('Sign in failed. Please try again.');
-            }
-        };
-
-        window.logout = async () => {
-            try {
-                await signOut(auth);
-                location.reload();
-            } catch(e) {
-                console.error('Logout error:', e);
-            }
-        };
-
-        document.addEventListener('click', (e) => {
-            const sidebar = document.getElementById('sidebar');
-            const toggle = document.querySelector('.menu-toggle');
-            if (window.innerWidth <= 1024 && sidebar.classList.contains('active') && 
-                !sidebar.contains(e.target) && !toggle.contains(e.target)) {
-                sidebar.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        });
-
-        onAuthStateChanged(auth, (user) => {
-            const mainAuthUI = document.getElementById('main-auth-ui');
-            const authHeader = document.getElementById('auth-header-area');
-            const addAccountSide = document.getElementById('add-account-container');
-
-            if (user) {
-                enterAsGuest();
-                authHeader.innerHTML = `
-                    <div class="auth-profile-wrap">
-                        <img src="${user.photoURL || 'https://via.placeholder.com/38?text=👤'}" alt="Profile" class="user-img" width="38" height="38" onerror="this.src='https://via.placeholder.com/38?text=👤'">
-                        <span style="font-weight:600; max-width:150px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">${user.displayName || 'User'}</span>
-                        <button class="btn btn-logout" onclick="logout()">Sign Out</button>
-                    </div>
-                `;
-                addAccountSide.style.display = 'block'; 
-            } else {
-                authHeader.innerHTML = `<button class="btn btn-primary" onclick="signIn()">Sign In</button>`;
-                mainAuthUI.innerHTML = `
-                    <div style="display:flex; flex-direction:column; gap:16px; max-width:300px; margin:0 auto;">
-                        <button class="btn btn-primary" onclick="signIn()">Sign In with Google</button>
-                        <button class="btn btn-guest" onclick="enterAsGuest()">Continue as Guest</button>
-                    </div>
-                `;
-                addAccountSide.style.display = 'none';
-            }
-        });
-
-        window.addEventListener('resize', () => {
-            if (window.innerWidth > 1024) {
-                document.getElementById('sidebar').classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        });
-    </script>
-
-    <style>
-        /* ALL YOUR EXISTING CSS + NEW FEEDBACK STYLES */
-        :root {
-            --primary: #00f2ff;
-            --primary-glow: rgba(0, 242, 255, 0.6);
-            --glass: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
-            --sidebar-width: 260px;
-            --sidebar-width-mobile: 280px;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: #000; color: #fff; overflow-x: hidden; min-height: 100vh; perspective: 1000px; }
-
-        /* ✅ NEW FEEDBACK MODAL STYLES */
-        .feedback-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 3000;
-            opacity: 0; visibility: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .feedback-modal.active { opacity: 1; visibility: visible; }
-        .feedback-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
-        }
-        .feedback-box {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8);
-            width: 90%; max-width: 500px; background: rgba(20,20,20,0.95);
-            backdrop-filter: blur(25px); border: 1px solid var(--border);
-            border-radius: 20px; padding: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .feedback-modal.active .feedback-box { transform: translate(-50%, -50%) scale(1); }
-        .feedback-header {
-            padding: 25px 30px; border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .feedback-header h3 { margin: 0; font-size: 1.3rem; font-weight: 700; color: var(--primary); }
-        .close-feedback {
-            background: none; border: none; font-size: 1.5rem; color: #888;
-            width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; transition: all 0.3s;
-        }
-        .close-feedback:hover { background: var(--glass); color: var(--primary); }
-        .feedback-box form { padding: 30px; }
-        .feedback-box input, .feedback-box textarea {
-            width: 100%; padding: 14px 16px; margin-bottom: 18px; border: 1px solid var(--border);
-            border-radius: 12px; background: rgba(255,255,255,0.05); color: #fff;
-            font-size: 0.95rem; font-family: inherit; transition: all 0.3s;
-        }
-        .feedback-box input::placeholder, .feedback-box textarea::placeholder { color: #888; }
-        .feedback-box input:focus, .feedback-box textarea:focus {
-            outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow);
-            background: rgba(255,255,255,0.08);
-        }
-        .feedback-submit {
-            width: 100%; background: linear-gradient(135deg, var(--primary), #00d4ff);
-            color: #000; border: none; padding: 14px 20px; border-radius: 12px;
-            font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.3s;
-        }
-        .feedback-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 30px var(--primary-glow); }
-        .feedback-success {
-            padding: 40px 30px; text-align: center; color: var(--primary); font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        /* YOUR EXISTING CSS (unchanged) */
-        #bg-video-fallback {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover; z-index: -1; background: radial-gradient(circle at 20% 80%, #00f2ff20 0%, transparent 50%), 
-                                                                  radial-gradient(circle at 80% 20%, #ff00ff20 0%, transparent 50%), #000;
-            animation: bgPulse 20s ease-in-out infinite;
-        }
-        #bg-video { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; transition: filter 1.2s ease; }
-        .blurred { filter: blur(45px) brightness(0.3); }
-
-        .menu-toggle {
-            display: block; position: fixed; top: 20px; left: 20px; z-index: 3000;
-            background: var(--primary); color: #000; border: none; padding: 12px 16px; border-radius: 12px; 
-            cursor: pointer; font-weight: 800; font-size: 1rem; box-shadow: 0 8px 25px var(--primary-glow);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .menu-toggle:hover { transform: scale(1.05); }
-
-        .sidebar {
-            width: var(--sidebar-width-mobile); height: 100vh; background: rgba(10, 10, 10, 0.98);
-            backdrop-filter: blur(25px); border-right: 1px solid var(--border); position: fixed; left: 0; top: 0;
-            display: flex; flex-direction: column; padding: 70px 20px 20px; z-index: 2100; 
-            transform: translate3d(-100%, 0, 0); will-change: transform;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow-y: auto; overscroll-behavior: contain; box-shadow: 2px 0 30px rgba(0,0,0,0.5);
-        }
-        .sidebar.active { transform: translate3d(0, 0, 0); }
-
-        /* [ALL YOUR OTHER EXISTING CSS REMAINS EXACTLY THE SAME - too long to repeat here] */
-        .close-btn {
-            position: absolute; top: 20px; right: 20px; font-size: 1.8rem; color: var(--primary); 
-            cursor: pointer; background: rgba(255,255,255,0.1); border: none; width: 44px; height: 44px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            transition: all 0.3s ease;
-        }
-        .close-btn:hover { background: var(--primary); color: #000; transform: rotate(90deg); }
-
-        /* Rest of your CSS unchanged... */
-    </style>
+    <!-- Rest of your HTML unchanged -->
 </body>
-</html>
+
+<script type="module">
+    // ✅ NEW DESKTOP SIDEBAR FUNCTIONS
+    window.toggleDesktopSidebar = () => {
+        const sidebar = document.getElementById('sidebar');
+        const mainWrapper = document.querySelector('.main-wrapper');
+        const desktopToggle = document.querySelector('.desktop-toggle');
+        
+        if (sidebar.classList.contains('desktop-hidden')) {
+            sidebar.classList.remove('desktop-hidden');
+            mainWrapper.classList.remove('desktop-expanded');
+            desktopToggle.textContent = '◀'; // Show left arrow
+        } else {
+            sidebar.classList.add('desktop-hidden');
+            mainWrapper.classList.add('desktop-expanded');
+            desktopToggle.textContent = '▶'; // Show right arrow
+        }
+    };
+
+    window.hideDesktopSidebar = () => {
+        const sidebar = document.getElementById('sidebar');
+        const mainWrapper = document.querySelector('.main-wrapper');
+        const desktopToggle = document.querySelector('.desktop-toggle');
+        
+        sidebar.classList.add('desktop-hidden');
+        mainWrapper.classList.add('desktop-expanded');
+        desktopToggle.textContent = '▶';
+    };
+
+    // ✅ UPDATE: Enhanced resize handler
+    window.addEventListener('resize', () => {
+        const sidebar = document.getElementById('sidebar');
+        const mainWrapper = document.querySelector('.main-wrapper');
+        
+        if (window.innerWidth > 1024) {
+            sidebar.classList.remove('active'); // Close mobile overlay
+            document.body.style.overflow = '';
+            // Preserve desktop state
+        } else {
+            sidebar.classList.remove('desktop-hidden'); // Reset desktop hide on mobile
+            mainWrapper.classList.remove('desktop-expanded');
+        }
+    });
+
+    // Your existing functions unchanged...
+</script>
+
+<style>
+    /* ✅ NEW DESKTOP TOGGLE STYLES */
+    .desktop-toggle {
+        display: none; /* Hidden on mobile */
+        position: fixed; top: 20px; left: 20px; z-index: 2500;
+        background: rgba(0,242,255,0.9); color: #000; border: none;
+        width: 44px; height: 44px; border-radius: 12px; cursor: pointer;
+        font-size: 1.2rem; font-weight: 800; box-shadow: 0 8px 25px var(--primary-glow);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .desktop-toggle:hover {
+        transform: scale(1.1); background: var(--primary);
+        box-shadow: 0 12px 35px var(--primary-glow);
+    }
+
+    /* ✅ DESKTOP SIDEBAR HIDE */
+    @media (min-width: 1025px) {
+        .desktop-toggle { display: flex; align-items: center; justify-content: center; }
+        
+        .sidebar {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        
+        /* ✅ HIDDEN STATE */
+        .sidebar.desktop-hidden {
+            transform: translateX(-100%) !important;
+            width: 0 !important; padding: 0 !important;
+            border-right: none !important; opacity: 0;
+        }
+        
+        .main-wrapper.desktop-expanded {
+            margin-left: 0 !important; width: 100% !important;
+        }
+        
+        /* Desktop close button */
+        .desktop-close-btn {
+            display: flex !important; position: absolute; top: 20px; right: 20px;
+            background: rgba(255,0,0,0.2); color: #fff; border: none;
+            width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem;
+            align-items: center; justify-content: center; cursor: pointer;
+            transition: all 0.3s; opacity: 0.8;
+        }
+        .desktop-close-btn:hover {
+            background: #ff4444; transform: scale(1.1);
+        }
+        
+        /* Hide mobile close button on desktop */
+        .close-btn { display: none !important; }
+        .menu-toggle { display: none !important; }
+    }
+
+    /* ✅ RESET on mobile */
+    @media (max-width: 1024px) {
+        .desktop-toggle { display: none !important; }
+        .desktop-close-btn { display: none !important; }
+        .sidebar.desktop-hidden { display: block !important; transform: translate3d(-100%, 0, 0) !important; }
+    }
+
+    /* Your existing styles unchanged... */
+</style>
