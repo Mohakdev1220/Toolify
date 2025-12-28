@@ -66,7 +66,57 @@
             border-top: 1px solid var(--border);
             padding-top: 20px;
             display: none; 
-        }
+        } 
+        /* Mobile Toggle Button */
+.menu-toggle {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 2000;
+    background: var(--primary);
+    color: #000;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 800;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .menu-toggle { display: block; }
+
+    .sidebar {
+        width: 100%; /* Covers full screen on mobile */
+        left: -100%; /* Hidden by default */
+        transition: 0.4s ease-in-out;
+    }
+
+    .sidebar.active {
+        left: 0; /* Slides in to cover screen */
+    }
+
+    .main-wrapper {
+        margin-left: 0; /* Remove margin since sidebar is now an overlay */
+        width: 100%;
+    }
+
+    .hero-title { font-size: 2.8rem; }
+    
+    .close-btn {
+        display: block !important;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 1.5rem;
+        color: var(--primary);
+        cursor: pointer;
+    }
+}
+
+/* Hide Close button on desktop */
+.close-btn { display: none; }
 
         /* --- MAIN CONTENT AREA --- */
         .main-wrapper {
@@ -151,7 +201,24 @@
     <video autoplay muted loop id="bg-video">
         <source src="background.mp4" type="video/mp4">
     </video>
+<button class="menu-toggle" onclick="toggleMenu()">☰</button>
 
+<nav class="sidebar" id="sidebar">
+    <div class="close-btn" onclick="toggleMenu()">✕</div>
+
+    <div class="brand-container">
+        <img src="logo.png" alt="L" class="logo-img">
+        <div class="logo-text"><span class="part1">Tool</span>ify</div>
+    </div>
+    
+    <div onclick="enterAsGuest(); toggleMenu();" class="side-link"><span>🛠️</span> Tools</div>
+    <a href="privacy.html" class="side-link"><span>📜</span> Privacy Policy</a>
+    <a href="terms.html" class="side-link"><span>⚖️</span> Terms & Conditions</a>
+    
+    <div id="add-account-container">
+        <div onclick="signIn(); toggleMenu();" class="side-link" style="color: var(--primary);"><span>➕</span> Add Account</div>
+    </div>
+</nav>
     <nav class="sidebar">
         <div class="brand-container">
             <img src="logo.png" alt="L" class="logo-img">
@@ -250,7 +317,20 @@
                 mainAuthUI.innerHTML = `<button class="btn btn-guest" onclick="enterAsGuest()">Guest Mode</button>`;
                 addAccountSide.style.display = 'none';
             }
-        });
+        }); 
+        window.toggleMenu = () => {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('active');
+};
+
+// Update your enterAsGuest to close menu if on mobile
+const originalEnterAsGuest = window.enterAsGuest;
+window.enterAsGuest = () => {
+    originalEnterAsGuest();
+    if (window.innerWidth <= 768) {
+        document.getElementById('sidebar').classList.remove('active');
+    }
+};
     </script>
 </body>
 </html>
