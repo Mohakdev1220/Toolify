@@ -3,297 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toolify Ultra Pro | Professional Dark</title>
+    <title>Toolify Ultra Pro | Responsive</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* PROFESSIONAL BLACK DARK THEME */
-            --bg: #0a0a0a; --card: #151515; --text: #e0e0e0;
+            --bg: #0a0a0a; --card: #151515; --text: #f0f0f0;
             --primary: #00d4aa; --danger: #ff4757; --success: #2ed573;
             --border: #2a2a2a; --accent: #1f1f1f;
+            --nav-bg: rgba(21, 21, 21, 0.8);
         }
 
+        html { scroll-behavior: smooth; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: var(--bg); color: var(--text);
-            min-height: 100vh; padding: 20px;
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg); color: var(--text); 
+            padding-top: 80px; /* Space for sticky nav */
         }
 
-        .container {
-            display: grid; grid-template-columns: 1fr; gap: 20px;
-            max-width: 1200px; margin: auto;
+        /* --- STICKY NAV BAR --- */
+        nav {
+            position: fixed; top: 0; left: 0; width: 100%;
+            height: 70px; background: var(--nav-bg);
+            backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 5%; z-index: 1000;
         }
-        @media (min-width: 768px) { .container { grid-template-columns: repeat(2, 1fr); } }
-        @media (min-width: 1024px) { .full-row { grid-column: span 2; } }
+        .logo { font-weight: 800; color: var(--primary); font-size: 1.5rem; text-decoration: none; }
+        .nav-links { display: flex; gap: 20px; }
+        .nav-links a { 
+            color: var(--text); text-decoration: none; font-weight: 600; 
+            font-size: 0.9rem; transition: 0.3s; 
+        }
+        .nav-links a:hover { color: var(--primary); }
 
-        .card {
-            background: var(--card); border-radius: 24px; padding: 25px;
-            border: 1px solid var(--border); box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-        }
-
-        h2 { 
-            font-size: 1.1rem; color: var(--primary); margin-bottom: 15px; 
-            text-transform: uppercase; letter-spacing: 1px; font-weight: 800;
-        }
-        input { 
-            width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 12px; 
-            border: 1px solid var(--border); background: var(--accent); 
-            color: var(--text); outline: none; font-weight: 500;
-        }
-        input::placeholder { color: #888; }
-        .btn { 
-            padding: 12px; border-radius: 12px; border: none; font-weight: 700; 
-            cursor: pointer; transition: all 0.2s; color: white; background: var(--primary);
-            width: 100%;
-        }
-        .btn:active { transform: scale(0.96); box-shadow: 0 5px 15px rgba(0,212,170,0.4); }
-        .btn-danger { background: var(--danger); }
-        .btn-sec { background: #4a5568; }
-        .btn-sm { padding: 6px 12px; font-size: 0.85rem; width: auto; }
-
-        .display { 
-            font-size: 3.2rem; font-weight: 800; text-align: center; 
-            margin: 15px 0; font-variant-numeric: tabular-nums; color: var(--primary);
-        }
-        .list { max-height: 150px; overflow-y: auto; margin-top: 15px; padding: 5px; }
-        .item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 12px; background: var(--accent); border-radius: 12px; 
-            margin-bottom: 8px; border: 1px solid var(--border);
+        /* --- CONTAINER & CARDS --- */
+        .container { 
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; 
+            max-width: 1100px; margin: auto; padding: 20px;
         }
 
-        #overlay {
-            position: fixed; inset: 0; background: var(--primary); z-index: 9999;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; color: white;
+        .card { 
+            background: var(--card); border-radius: 24px; padding: 25px; 
+            border: 1px solid var(--border); transition: transform 0.3s;
         }
 
-        @keyframes pulse {
-            0%, 100% { background: var(--primary); }
-            50% { background: #00b894; }
+        .full-row { grid-column: span 2; }
+
+        /* --- MOBILE VIEW (RESPONSIVE) --- */
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; } /* Single column on mobile */
+            .full-row { grid-column: span 1; }
+            .nav-links { display: none; } /* Hide links on tiny screens or use a menu */
+            .display { font-size: 2.8rem; } /* Smaller font for mobile */
+            .btn { padding: 16px; font-size: 1rem; } /* Bigger touch targets */
         }
-        #overlay.show { display: flex; animation: pulse 1.2s infinite; }
+
+        /* --- UI ELEMENTS --- */
+        h2 { font-size: 0.9rem; color: var(--primary); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+        .display { font-size: 3.5rem; font-weight: 800; text-align: center; margin: 10px 0; color: var(--primary); font-variant-numeric: tabular-nums; }
+        input { width: 100%; padding: 14px; margin-bottom: 10px; border-radius: 12px; border: 1px solid var(--border); background: var(--accent); color: white; outline: none; }
+        .btn { padding: 12px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; color: white; background: var(--primary); width: 100%; }
+        .btn-danger { background: var(--danger); width: auto; padding: 8px 12px; }
+        .btn-edit { background: var(--success); width: auto; padding: 8px 12px; margin-right: 5px; }
+        
+        .list { max-height: 200px; overflow-y: auto; margin-top: 15px; }
+        .item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--accent); border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--border); }
+
+        /* --- ALARM OVERLAY --- */
+        #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        #overlay.show { display: flex; }
     </style>
 </head>
 <body>
 
+<nav>
+    <a href="index.html" class="logo">TOOLIFY</a>
+    <div class="nav-links">
+        <a href="#alarm-section">Alarm</a>
+        <a href="#timer-section">Timer</a>
+        <a href="#stopwatch-section">Stopwatch</a>
+        <a href="index.html" style="color: var(--danger);">Back to Hub</a>
+    </div>
+</nav>
+
 <div class="container">
     <div class="card full-row">
-        <div id="dateText" style="text-align: center; opacity: 0.7; font-size: 0.95rem; font-weight: 500;"></div>
-        <div class="display" id="mainTime">00:00:00</div>
+        <div id="dateText" style="text-align: center; opacity: 0.6; font-size: 0.9rem; font-weight: 600;"></div>
+        <div class="display" id="mainTime">00:00:00 --</div>
     </div>
 
-    <div class="card">
-        <h2>Alarms ⏰</h2>
+    <div class="card" id="alarm-section">
+        <h2>Alarm ⏰</h2>
         <input type="time" id="alTime">
-        <input type="text" id="alLabel" placeholder="Meeting / Gym / Wakeup">
-        <button class="btn" onclick="addAlarm()">Add Alarm</button>
+        <button class="btn" onclick="addAlarm()">Set Alarm</button>
         <div id="alList" class="list"></div>
     </div>
 
-    <div class="card">
+    <div class="card" id="timer-section">
         <h2>Timer ⌛</h2>
-        <div style="display: flex; gap: 8px;">
-            <input type="number" id="th" placeholder="HH" min="0" max="23">
-            <input type="number" id="tm" placeholder="MM" min="0" max="59">
-            <input type="number" id="ts" placeholder="SS" min="0" max="59">
+        <div style="display: flex; gap: 5px;">
+            <input type="number" id="th" placeholder="HH">
+            <input type="number" id="tm" placeholder="MM">
+            <input type="number" id="ts" placeholder="SS">
         </div>
         <button class="btn" id="tmBtn" onclick="toggleTimer()">Start Timer</button>
         <div class="display" id="tmDisplay" style="font-size: 2.2rem;">00:00:00</div>
     </div>
 
-    <div class="card full-row">
+    <div class="card full-row" id="stopwatch-section">
         <h2>Stopwatch ⏱️</h2>
         <div class="display" id="swDisplay">00:00.00</div>
         <div style="display: flex; gap: 10px;">
-            <button class="btn" id="swBtn" style="flex:1" onclick="toggleSW()">Start</button>
-            <button class="btn btn-sec" onclick="lapSW()">Lap</button>
-            <button class="btn btn-danger" onclick="resetSW()">Reset</button>
+            <button class="btn" id="swBtn" style="flex:2" onclick="toggleSW()">Start</button>
+            <button class="btn" style="flex:1; background:#4a5568" onclick="addLap()">Lap</button>
+            <button class="btn btn-danger" style="flex:1" onclick="resetSW()">Reset</button>
         </div>
         <div id="lapList" class="list"></div>
     </div>
 </div>
 
 <div id="overlay">
-    <h1 style="font-size: 6rem; margin-bottom: 20px;">🔔</h1>
-    <h1 id="ringTime" style="font-size: 4rem; margin: 10px 0;">00:00</h1>
-    <p id="ringLabel" style="font-size: 1.5rem; margin-bottom: 40px; font-weight: 500;">ALARM RINGING</p>
-    <button class="btn" style="background:white; color:var(--primary); width:220px; padding:18px; font-size:1.1rem; border-radius:16px;" onclick="stopAlarm()">DISMISS ALARM</button>
+    <h1 style="font-size: 5rem;">🔔</h1>
+    <h2 style="color:white; margin: 20px; font-size: 2rem;">ALARM IS RINGING</h2>
+    <button class="btn" style="background:white; color:black; width:250px; height: 60px; font-size: 1.2rem;" onclick="stopAudio()">DISMISS ALARM</button>
 </div>
 
-<!-- YOUR CUSTOM RINGTONES - Just replace src paths -->
-<audio id="alarmAudio" loop preload="auto"></audio>
-<audio id="timerAudio" loop preload="auto"></audio>
+<audio id="alarmAudio" loop src="alarm.mp3"></audio>
 
 <script>
-    let alarms = JSON.parse(localStorage.getItem('toolify_v3_alarms') || '[]');
+    let alarms = [];
     let timerInt = null, swInt = null, swElapsed = 0, swStart = 0;
-    let ringId = null, audioUnlocked = false;
+    let isRinging = false;
+    let lastRungMinute = "";
 
-    // Professional Audio Unlock
-    document.addEventListener('click', function unlockAudio() {
-        if (!audioUnlocked) {
-            audioUnlocked = true;
-            const alarmAud = document.getElementById('alarmAudio');
-            const timerAud = document.getElementById('timerAudio');
-            alarmAud.volume = 0.01; timerAud.volume = 0.01;
-            Promise.all([
-                alarmAud.play().then(() => alarmAud.pause()),
-                timerAud.play().then(() => timerAud.pause())
-            ]).catch(() => {});
-        }
-        document.removeEventListener('click', unlockAudio);
-    }, { once: true });
-
-    // Master Clock + Alarm Detection
+    // CLOCK & ALARM CHECK
     setInterval(() => {
         const now = new Date();
-        const timeStr = now.toLocaleTimeString('en-GB'); 
-        const matchStr = timeStr.substring(0, 5);
-        document.getElementById('mainTime').textContent = timeStr;
+        const time12 = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+        document.getElementById('mainTime').textContent = time12;
         document.getElementById('dateText').textContent = now.toDateString().toUpperCase();
 
-        alarms.forEach(a => {
-            if (a.on && a.time === matchStr && ringId !== a.id) {
-                triggerRing(a);
-            }
-        });
-    }, 1000);
-
-    // Alarm Management
-    function addAlarm() {
-        const tInput = document.getElementById('alTime');
-        const lInput = document.getElementById('alLabel');
-        if (!tInput.value) return;
-        
-        alarms.push({ 
-            id: Date.now(), 
-            time: tInput.value, 
-            label: lInput.value || "Wake Up", 
-            on: true 
-        });
-        tInput.value = ""; lInput.value = "";
-        renderAlarms();
-    }
-
-    function toggleA(id) {
-        const i = alarms.findIndex(x => x.id === id);
-        if(i > -1) alarms[i].on = !alarms[i].on;
-        renderAlarms();
-    }
-
-    function delA(id) {
-        alarms = alarms.filter(x => x.id !== id);
-        renderAlarms();
-    }
+        const currentMin = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+        if (currentMin !== lastRungMinute) {
+            alarms.forEach((a, index) => {
+                if (a.time === currentMin && a.active && !isRinging) {
+                    triggerRing();
+                    lastRungMinute = currentMin;
+                }
+            });
+        }
+    }, 100);
 
     function renderAlarms() {
-        localStorage.setItem('toolify_v3_alarms', JSON.stringify(alarms));
         const list = document.getElementById('alList');
-        list.innerHTML = alarms.map(a => `
-            <div class="item">
-                <div><b>${a.time}</b><br><small style="opacity:0.8;">${a.label}</small></div>
-                <div style="display:flex; gap:8px;">
-                    <button class="btn btn-sm" style="background:${a.on?'var(--success)':'#4a5568'}" onclick="toggleA(${a.id})">${a.on?'ON':'OFF'}</button>
-                    <button class="btn btn-sm btn-danger" onclick="delA(${a.id})">🗑</button>
-                </div>
-            </div>
-        `).join('');
+        list.innerHTML = "";
+        alarms.forEach((a, index) => {
+            const item = document.createElement('div');
+            item.className = 'item';
+            item.innerHTML = `<span><b>${a.time}</b></span><div>
+                <button class="btn btn-edit" onclick="editAlarm(${index})">Edit</button>
+                <button class="btn btn-danger" onclick="deleteAlarm(${index})">Delete</button>
+            </div>`;
+            list.appendChild(item);
+        });
     }
 
-    // ALARM RING (Replace src with your alarm.mp3)
-    function triggerRing(alarmData) {
-        ringId = alarmData.id;
-        const alarmAud = document.getElementById('alarmAudio');
-        alarmAud.src = "alarm.mp3"; // ← YOUR ALARM FILE HERE
-        alarmAud.currentTime = 0; alarmAud.loop = true; alarmAud.volume = 0.8;
-        alarmAud.play().catch(e => console.error("Alarm:", e));
-        
-        document.getElementById('ringLabel').textContent = alarmData.label;
-        document.getElementById('ringTime').textContent = alarmData.time;
-        document.getElementById('overlay').className = 'show';
+    function addAlarm() {
+        const t = document.getElementById('alTime').value;
+        if (t) { alarms.push({ time: t, active: true }); renderAlarms(); }
     }
 
-    function stopAlarm() {
-        document.getElementById('alarmAudio').pause();
-        document.getElementById('overlay').className = '';
-        setTimeout(() => { ringId = null; }, 60000);
+    function deleteAlarm(index) { alarms.splice(index, 1); renderAlarms(); }
+    
+    function editAlarm(index) {
+        const newT = prompt("New Time (HH:MM):", alarms[index].time);
+        if (newT) { alarms[index].time = newT; renderAlarms(); }
     }
 
-    // TIMER RING (Replace src with your timer.mp3)
-    function triggerTimerRing() {
-        const timerAud = document.getElementById('timerAudio');
-        timerAud.src = "timer.mp3"; // ← YOUR TIMER FILE HERE
-        timerAud.currentTime = 0; timerAud.loop = true; timerAud.volume = 0.8;
-        timerAud.play().catch(e => console.error("Timer:", e));
-        
-        document.getElementById('ringLabel').textContent = "Timer Finished!";
-        document.getElementById('ringTime').textContent = "TIME UP";
-        document.getElementById('overlay').className = 'show';
-    }
-
-    // Timer Logic
     function toggleTimer() {
-        const btn = document.getElementById('tmBtn');
-        const display = document.getElementById('tmDisplay');
-        const hIn = document.getElementById('th'), mIn = document.getElementById('tm'), sIn = document.getElementById('ts');
-
-        if (timerInt) { 
-            clearInterval(timerInt); timerInt = null; btn.textContent = "Start Timer"; return; 
-        }
-
-        let s = (+(hIn.value||0)*3600) + (+(mIn.value||0)*60) + (+(sIn.value||0));
+        if (timerInt) { clearInterval(timerInt); timerInt = null; document.getElementById('tmBtn').textContent = "Start"; return; }
+        let s = (parseInt(document.getElementById('th').value)||0)*3600 + (parseInt(document.getElementById('tm').value)||0)*60 + (parseInt(document.getElementById('ts').value)||0);
         if (s <= 0) return;
-        
-        btn.textContent = "Stop Timer";
+        document.getElementById('tmBtn').textContent = "Stop";
         timerInt = setInterval(() => {
             s--;
+            if (s < 0) { clearInterval(timerInt); triggerRing(); return; }
             let h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
-            display.textContent = `${h.padStart(2,0)}:${m.padStart(2,0)}:${sec.padStart(2,0)}`;
-            if (s <= 0) { 
-                clearInterval(timerInt); timerInt = null; btn.textContent="Start Timer"; 
-                triggerTimerRing(); 
-            }
+            document.getElementById('tmDisplay').textContent = `${String(h).padStart(2,0)}:${String(m).padStart(2,0)}:${String(sec).padStart(2,0)}`;
         }, 1000);
-        hIn.value = ""; mIn.value = ""; sIn.value = "";
     }
 
-    // Stopwatch Logic
     function toggleSW() {
-        const btn = document.getElementById('swBtn');
-        const display = document.getElementById('swDisplay');
-        if (swInt) {
-            clearInterval(swInt); swInt = null; btn.textContent = "Resume";
-        } else {
+        if (swInt) { clearInterval(swInt); swInt = null; document.getElementById('swBtn').textContent = "Resume"; }
+        else {
             swStart = Date.now() - swElapsed;
             swInt = setInterval(() => {
                 swElapsed = Date.now() - swStart;
                 let ms = Math.floor((swElapsed%1000)/10), s = Math.floor((swElapsed/1000)%60), m = Math.floor(swElapsed/60000);
-                display.textContent = `${m.toString().padStart(2,0)}:${s.toString().padStart(2,0)}.${ms.toString().padStart(2,0)}`;
-            }, 10);
-            btn.textContent = "Pause";
+                document.getElementById('swDisplay').textContent = `${String(m).padStart(2,0)}:${String(s).padStart(2,0)}.${String(ms).padStart(2,0)}`;
+            }, 50);
+            document.getElementById('swBtn').textContent = "Pause";
         }
     }
 
-    function lapSW() {
-        const display = document.getElementById('swDisplay');
-        const lapList = document.getElementById('lapList');
-        if (swElapsed === 0) return;
-        const lap = document.createElement('div');
-        lap.className = "item";
-        lap.innerHTML = `<span>Lap ${lapList.children.length + 1}</span><b>${display.textContent}</b>`;
-        lapList.prepend(lap);
+    function addLap() {
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.innerHTML = `<span>Lap ${document.getElementById('lapList').children.length+1}</span><b>${document.getElementById('swDisplay').textContent}</b>`;
+        document.getElementById('lapList').prepend(item);
     }
 
     function resetSW() {
         clearInterval(swInt); swInt = null; swElapsed = 0;
         document.getElementById('swDisplay').textContent = "00:00.00";
-        document.getElementById('swBtn').textContent = "Start";
         document.getElementById('lapList').innerHTML = "";
     }
 
-    renderAlarms();
+    function triggerRing() {
+        isRinging = true;
+        document.getElementById('alarmAudio').play().catch(() => {});
+        document.getElementById('overlay').className = 'show';
+    }
+
+    function stopAudio() {
+        const aud = document.getElementById('alarmAudio');
+        aud.pause(); aud.currentTime = 0;
+        document.getElementById('overlay').className = '';
+        isRinging = false;
+    }
 </script>
 </body>
 </html>
