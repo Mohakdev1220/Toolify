@@ -14,9 +14,9 @@
             display: flex; 
             justify-content: center; 
             align-items: center; 
-            height: 100vh; 
+            min-height: 100vh; 
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: #0f172a; /* Solid professional background */
+            background: #0f172a; 
             color: white; 
             margin: 0;
         }
@@ -33,36 +33,48 @@
         }
 
         .logo-area { font-size: 3.5rem; margin-bottom: 10px; }
-
         h2 { margin: 0; font-weight: 700; font-size: 1.8rem; color: #fff; }
         .project-tag { font-size: 0.7rem; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; display: block; }
-
         p { color: #94a3b8; margin-bottom: 30px; font-size: 0.95rem; line-height: 1.5; }
 
-        .auth-btn { 
+        /* Buttons & Inputs */
+        .auth-btn, .phone-btn { 
             width: 100%; 
-            padding: 16px; 
+            padding: 14px; 
             border: none; 
             border-radius: 12px; 
             font-weight: 700; 
             cursor: pointer; 
             transition: 0.2s;
-            background: #3b82f6; /* Blue professional button */
+            background: #3b82f6;
             color: white; 
-            font-size: 1rem;
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            margin-bottom: 15px;
         }
 
-        .auth-btn:hover { background: #2563eb; transform: scale(1.02); }
+        .auth-btn:hover, .phone-btn:hover { background: #2563eb; transform: scale(1.02); }
+
+        .divider { margin: 20px 0; color: #64748b; font-size: 0.8rem; position: relative; }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(15, 23, 42, 0.5);
+            color: white;
+            box-sizing: border-box;
+        }
 
         .disclaimer {
             margin-top: 25px;
             font-size: 0.7rem;
             color: #64748b;
-            line-height: 1.4;
             padding-top: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
@@ -74,40 +86,84 @@
         <div class="logo-area">🛠️</div>
         <span class="project-tag">Personal Portfolio Project</span>
         <h2>Toolify Login</h2>
-        <p>This is a demonstration utility hub. Sign in to sync your local alarm settings.</p>
+        <p>Sign in to sync your tools & settings.</p>
         
-        <button class="auth-btn" onclick="googleLogin()">
-            Continue with Google Account
+        <button class="auth-btn" id="google-login-btn">
+            Continue with Google
         </button>
 
+        <div class="divider">OR USE PHONE</div>
+
+        <div id="phone-auth-container">
+            <div id="phone-input-group">
+                <input type="text" id="phone-number" placeholder="+91 9876543210">
+                <button class="phone-btn" id="send-otp-btn">Send OTP</button>
+            </div>
+
+            <div id="otp-input-group" style="display:none;">
+                <input type="text" id="verification-code" placeholder="6-digit OTP code">
+                <button class="phone-btn" style="background: #10b981;" id="verify-otp-btn">Verify & Login</button>
+            </div>
+        </div>
+
+        <div id="recaptcha-container"></div>
+
         <div class="disclaimer">
-            <strong>Security Note:</strong> This project uses Firebase Authentication. We do not store or see your passwords. This site is for educational use only.
+            <strong>Security Note:</strong> Powered by Firebase. We do not store your passwords.
         </div>
     </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+    // --- APNE REAL CREDENTIALS YAHAN DAALEIN ---
     const firebaseConfig = {
-        apiKey: "AIzaSyAeHDhdiTRwftUGYgrb1m19v7hm2R5rb-Y",
+apiKey: "AIzaSyAeHDhdiTRwftUGYgrb1m19v7hm2R5rb-Y",
+
         authDomain: "toolbox-hub-98c03.firebaseapp.com",
+
         projectId: "toolbox-hub-98c03",
+
         appId: "1:321020105472:web:356e7c2903def7b9d859e5"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    window.googleLogin = () => {
+    // 1. Google Login Logic
+    document.getElementById('google-login-btn').onclick = () => {
         const provider = new GoogleAuthProvider();
         signInWithPopup(auth, provider)
+            .then(() => window.location.href = "index.html")
+            .catch((error) => alert(error.message));
+    };
+
+    // 2. Phone Auth: Recaptcha Setup
+    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        'size': 'invisible'
+    });
+
+    // 3. Phone Auth: Send OTP
+    document.getElementById('send-otp-btn').onclick = () => {
+        const number = document.getElementById('phone-number').value;
+        if(!number.includes('+')) return alert("Add country code like +91");
+
+        signInWithPhoneNumber(auth, number, window.recaptchaVerifier)
             .then((result) => {
-                window.location.href = "index.html"; 
-            })
-            .catch((error) => {
-                alert("Login Error: " + error.message);
-            });
+                window.confirmationResult = result;
+                document.getElementById('phone-input-group').style.display = 'none';
+                document.getElementById('otp-input-group').style.display = 'block';
+                alert("OTP Sent!");
+            }).catch((err) => alert(err.message));
+    };
+
+    // 4. Phone Auth: Verify OTP
+    document.getElementById('verify-otp-btn').onclick = () => {
+        const code = document.getElementById('verification-code').value;
+        window.confirmationResult.confirm(code)
+            .then(() => window.location.href = "index.html")
+            .catch(() => alert("Invalid OTP!"));
     };
 </script>
 
