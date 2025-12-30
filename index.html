@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <head>
-  ...
-  <link rel="manifest" href="/manifest.json">
+  
+<link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#000000">
-</head>
+
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -512,10 +511,7 @@ if ("serviceWorker" in navigator) {
     .catch(err => console.error("SW error", err));
 }
 </script>
-</body>
-
-
-    <script type="module">
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
