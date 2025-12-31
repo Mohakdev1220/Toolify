@@ -38,7 +38,7 @@
         p { color: #94a3b8; margin-bottom: 30px; font-size: 0.95rem; line-height: 1.5; }
 
         /* Buttons & Inputs */
-        .auth-btn, .phone-btn { 
+        .auth-btn, .phone-btn, .email-btn { 
             width: 100%; 
             padding: 14px; 
             border: none; 
@@ -56,7 +56,9 @@
             margin-bottom: 15px;
         }
 
-        .auth-btn:hover, .phone-btn:hover { background: #2563eb; transform: scale(1.02); }
+        .auth-btn:hover, .phone-btn:hover, .email-btn:hover { background: #2563eb; transform: scale(1.02); }
+        .email-btn.success { background: #10b981; }
+        .email-btn.error { background: #ef4444; }
 
         .divider { margin: 20px 0; color: #64748b; font-size: 0.8rem; position: relative; }
         
@@ -71,12 +73,59 @@
             box-sizing: border-box;
         }
 
+        input::placeholder { color: #64748b; }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(126, 250, 255, 0.1);
+        }
+
+        .auth-section {
+            display: none;
+        }
+
+        .auth-section.active {
+            display: block;
+        }
+
+        .toggle-auth {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+
+        .toggle-auth:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .status.success { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .status.error { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
         .disclaimer {
             margin-top: 25px;
             font-size: 0.7rem;
             color: #64748b;
             padding-top: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        @media (max-width: 480px) {
+            .card { width: 90%; padding: 30px 20px; margin: 20px; }
         }
     </style>
 </head>
@@ -88,15 +137,18 @@
         <h2>Toolify Login</h2>
         <p>Sign in to sync your tools & settings.</p>
         
+        <!-- Google Sign In -->
         <button class="auth-btn" id="google-login-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/></svg>
             Continue with Google
         </button>
 
-        <div class="divider">OR USE PHONE</div>
+        <div class="divider">OR CONTINUE WITH</div>
 
-        <div id="phone-auth-container">
+        <!-- Phone Authentication -->
+        <div class="auth-section active" id="phone-auth-container">
             <div id="phone-input-group">
-                <input type="text" id="phone-number" placeholder="+91 9876543210">
+                <input type="tel" id="phone-number" placeholder="+91 9876543210">
                 <button class="phone-btn" id="send-otp-btn">Send OTP</button>
             </div>
 
@@ -104,6 +156,19 @@
                 <input type="text" id="verification-code" placeholder="6-digit OTP code">
                 <button class="phone-btn" style="background: #10b981;" id="verify-otp-btn">Verify & Login</button>
             </div>
+        </div>
+
+        <!-- Email/Password Authentication -->
+        <div class="auth-section" id="email-auth-container">
+            <input type="email" id="email-input" placeholder="your@email.com">
+            <input type="password" id="password-input" placeholder="Password (min 6 chars)">
+            
+            <div class="status" id="email-status"></div>
+            
+            <button class="email-btn" id="email-signup-btn">Create Account</button>
+            <button class="email-btn" id="email-signin-btn">Sign In</button>
+            
+            <button class="toggle-auth" onclick="toggleAuth('phone-auth-container')">Use Phone Number</button>
         </div>
 
         <div id="recaptcha-container"></div>
@@ -115,23 +180,45 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { 
+        getAuth, 
+        signInWithPopup, 
+        GoogleAuthProvider, 
+        RecaptchaVerifier, 
+        signInWithPhoneNumber,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    // --- APNE REAL CREDENTIALS YAHAN DAALEIN ---
+    // Your Firebase Config
     const firebaseConfig = {
-apiKey: "AIzaSyAeHDhdiTRwftUGYgrb1m19v7hm2R5rb-Y",
-
+        apiKey: "AIzaSyAeHDhdiTRwftUGYgrb1m19v7hm2R5rb-Y",
         authDomain: "toolbox-hub-98c03.firebaseapp.com",
-
         projectId: "toolbox-hub-98c03",
-
         appId: "1:321020105472:web:356e7c2903def7b9d859e5"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // 1. Google Login Logic
+    // Toggle between auth methods
+    function toggleAuth(activeSectionId) {
+        document.querySelectorAll('.auth-section').forEach(section => {
+            section.classList.remove('active');
+        });
+        document.getElementById(activeSectionId).classList.add('active');
+    }
+
+    // Status helper
+    function showStatus(elementId, message, type) {
+        const status = document.getElementById(elementId);
+        status.textContent = message;
+        status.className = `status ${type}`;
+        status.style.display = 'block';
+        setTimeout(() => status.style.display = 'none', 4000);
+    }
+
+    // 1. Google Login (unchanged)
     document.getElementById('google-login-btn').onclick = () => {
         const provider = new GoogleAuthProvider();
         signInWithPopup(auth, provider)
@@ -139,12 +226,12 @@ apiKey: "AIzaSyAeHDhdiTRwftUGYgrb1m19v7hm2R5rb-Y",
             .catch((error) => alert(error.message));
     };
 
-    // 2. Phone Auth: Recaptcha Setup
+    // 2. Phone Auth Setup (unchanged)
     window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         'size': 'invisible'
     });
 
-    // 3. Phone Auth: Send OTP
+    // 3. Send Phone OTP (unchanged)
     document.getElementById('send-otp-btn').onclick = () => {
         const number = document.getElementById('phone-number').value;
         if(!number.includes('+')) return alert("Add country code like +91");
@@ -158,12 +245,52 @@ apiKey: "AIzaSyAeHDhdiTRwftUGYgrb1m19v7hm2R5rb-Y",
             }).catch((err) => alert(err.message));
     };
 
-    // 4. Phone Auth: Verify OTP
+    // 4. Verify Phone OTP (unchanged)
     document.getElementById('verify-otp-btn').onclick = () => {
         const code = document.getElementById('verification-code').value;
         window.confirmationResult.confirm(code)
             .then(() => window.location.href = "index.html")
             .catch(() => alert("Invalid OTP!"));
+    };
+
+    // 5. NEW: Email/Password Sign Up
+    document.getElementById('email-signup-btn').onclick = async () => {
+        const email = document.getElementById('email-input').value;
+        const password = document.getElementById('password-input').value;
+        
+        if (!email || !password || password.length < 6) {
+            showStatus('email-status', 'Please enter valid email & password (6+ chars)', 'error');
+            return;
+        }
+
+        try {
+            await createUserWithEmailAndPassword(auth, email, password);
+            window.location.href = "index.html";
+        } catch (error) {
+            showStatus('email-status', error.message, 'error');
+            document.getElementById('email-signup-btn').classList.add('error');
+            setTimeout(() => document.getElementById('email-signup-btn').classList.remove('error'), 2000);
+        }
+    };
+
+    // 6. NEW: Email/Password Sign In
+    document.getElementById('email-signin-btn').onclick = async () => {
+        const email = document.getElementById('email-input').value;
+        const password = document.getElementById('password-input').value;
+        
+        if (!email || !password) {
+            showStatus('email-status', 'Please enter email & password', 'error');
+            return;
+        }
+
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            window.location.href = "index.html";
+        } catch (error) {
+            showStatus('email-status', error.message, 'error');
+            document.getElementById('email-signin-btn').classList.add('error');
+            setTimeout(() => document.getElementById('email-signin-btn').classList.remove('error'), 2000);
+        }
     };
 </script>
 
