@@ -1,21 +1,28 @@
 {
-  "name": "Toolify",
-  "short_name": "Toolify",
-  "description": "The futuristic workspace for digital creators.",
-  "start_url": "/index.html",
+  "background_color": "#ffffff",
+  "description": "The futuristic workspace for dig\"The all-in-one digital toolbox for daily tasks. Access a precision alarm, calendar, advanced calculator, and essential utilities in one fast, offline-ready app.\"ital creators.",
+  "dir": "ltr",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#00f2ff",
+  "name": "Toolify",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "Toolify",
+  "start_url": "/",
+  "theme_color": "#0f0f0f",
   "icons": [
     {
-      "src": "icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "src": "https://mohakdev1220.github.io/toolify/favicon.png",
+      "type": "image/png",
+      "sizes": "64x64",
+      "isSquare": true,
+      "isPng": true,
+      "isWebp": false,
+      "isJpg": false,
+      "width": 64,
+      "is512x512": false,
+      "is256x256": false,
+      "is192x192": false
     }
-  ]
+  ],
+  "id": "https://mohakdev1220.github.io/toolify/"
 }
