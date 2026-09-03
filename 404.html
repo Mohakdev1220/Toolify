@@ -23,17 +23,38 @@
       padding: 24px;
     }
 
+    /* Top Countdown Banner */
+    .banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #111;
+      color: #fff;
+      text-align: center;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 1000;
+    }
+
+    .banner span {
+      font-weight: 700;
+      color: #ffcc00;
+    }
+
     .page {
       width: 100%;
       max-width: 620px;
       text-align: center;
+      margin-top: 40px;
     }
 
     .logo {
       font-size: 30px;
       font-weight: 800;
       letter-spacing: -1.5px;
-      margin-bottom: 70px;
+      margin-bottom: 50px;
     }
 
     .icon {
@@ -105,17 +126,21 @@
 
 <body>
 
+  <!-- Top Redirect Banner -->
+  <div class="banner">
+    This domain has changed. Redirecting to new site in <span id="countdown">10</span> seconds...
+  </div>
+
+  <!-- Hidden Audio Element (Replace with your actual mp3 file link or path) -->
+  <audio id="alert-audio" src="https://www.soundjay.com/buttons/sounds/beep-07.mp3" preload="auto"></audio>
+
   <div class="page">
-
     <div class="logo">Toolify</div>
-
     <div class="icon">↗</div>
-
     <h1>We've moved.</h1>
-
     <p>
-      Toolify has moved to a new address.
-      Visit our new website to access the latest version of Toolify.
+      This domain is changed. Toolify has moved to a new address. 
+      Visit our new website to access the latest version.
     </p>
 
     <div class="address">
@@ -124,18 +149,40 @@
 
     <br>
 
-    <a
-      class="button"
-      href="https://mohakchoubey.github.io/toolify/"
-    >
-      Go to Toolify
+    <a class="button" href="https://mohakchoubey.github.io/toolify/">
+      Go to Toolify Now
     </a>
 
     <div class="footer">
       Thank you for visiting Toolify.
     </div>
-
   </div>
+
+  <script>
+    // 1. Attempt to play audio automatically
+    window.addEventListener('DOMContentLoaded', () => {
+      const audio = document.getElementById('alert-audio');
+      audio.play().catch(error => {
+        // Browsers sometimes block autoplay if user hasn't interacted with the page yet.
+        console.log("Autoplay blocked by browser policy:", error);
+      });
+    });
+
+    // 2. Countdown and Redirect Logic (10 seconds)
+    let timeLeft = 10;
+    const countdownEl = document.getElementById('countdown');
+    const targetUrl = "https://mohakchoubey.github.io/toolify/";
+
+    const timer = setInterval(() => {
+      timeLeft--;
+      countdownEl.textContent = timeLeft;
+
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        window.location.href = targetUrl;
+      }
+    }, 1000);
+  </script>
 
 </body>
 </html>
